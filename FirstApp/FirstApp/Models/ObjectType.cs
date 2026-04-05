@@ -24,7 +24,9 @@ namespace FirstApp.Models
 
         public IdentityUser? UpdatedBy { get; set; } = null!;
 
-        public ICollection<Repository> Repositories { get; set; } = new List<Repository>();
+        public int? RepositoryId { get; set; }
+
+        public Repository? Repository { get; set; } = null!;
     }
 }
         

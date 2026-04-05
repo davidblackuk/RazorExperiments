@@ -19,7 +19,7 @@ namespace FirstApp.Pages.Repositories
         public async Task OnGetAsync()
         {
             Repositories = await _context.Repositories
-                .Include(r => r.ObjectType)
+                .Include(r => r.ObjectTypes)
                 .Include(r => r.CreatedBy)
                 .Include(r => r.UpdatedBy)
                 .ToListAsync();

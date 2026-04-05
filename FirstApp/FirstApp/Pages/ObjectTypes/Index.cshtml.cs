@@ -19,6 +19,7 @@ namespace FirstApp.Pages.ObjectTypes
         public async Task OnGetAsync()
         {
             ObjectTypes = await _context.ObjectTypes
+                .Include(o => o.Repository)
                 .Include(o => o.CreatedBy)
                 .Include(o => o.UpdatedBy)
                 .ToListAsync();

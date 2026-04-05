@@ -37,10 +37,10 @@ namespace FirstApp.Data
                 .HasForeignKey(r => r.UpdatedById)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<Repository>()
-                .HasOne(r => r.ObjectType)
-                .WithMany(o => o.Repositories)
-                .HasForeignKey(r => r.ObjectTypeId)
+            modelBuilder.Entity<ObjectType>()
+                .HasOne(o => o.Repository)
+                .WithMany(r => r.ObjectTypes)
+                .HasForeignKey(o => o.RepositoryId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

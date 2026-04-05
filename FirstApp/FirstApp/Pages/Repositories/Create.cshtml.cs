@@ -34,8 +34,7 @@ namespace FirstApp.Pages.Repositories
                 UpdatedById = userId,
                 UpdatedAt = DateTime.UtcNow,
                 CreatedBy = null!,
-                UpdatedBy = null!,
-                ObjectType = null!
+                UpdatedBy = null!
             };
 
             return Page();

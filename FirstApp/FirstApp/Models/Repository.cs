@@ -24,9 +24,7 @@ namespace FirstApp.Models
 
         public IdentityUser? UpdatedBy { get; set; } = null!;
 
-        public int? ObjectTypeId { get; set; }
-
-        public ObjectType? ObjectType { get; set; } = null!;
+        public ICollection<ObjectType> ObjectTypes { get; set; } = new List<ObjectType>();
     }
 }
         
