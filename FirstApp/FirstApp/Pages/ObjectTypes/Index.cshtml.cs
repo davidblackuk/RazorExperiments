@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using FirstApp.Data;
 using FirstApp.Models;
 
-namespace FirstApp.Pages.Repositories
+namespace FirstApp.Pages.ObjectTypes
 {
     public class IndexModel : PageModel
     {
@@ -14,14 +14,13 @@ namespace FirstApp.Pages.Repositories
             _context = context;
         }
 
-        public IList<Repository> Repositories { get; set; } = default!;
+        public IList<ObjectType> ObjectTypes { get; set; } = default!;
 
         public async Task OnGetAsync()
         {
-            Repositories = await _context.Repositories
-                .Include(r => r.ObjectType)
-                .Include(r => r.CreatedBy)
-                .Include(r => r.UpdatedBy)
+            ObjectTypes = await _context.ObjectTypes
+                .Include(o => o.CreatedBy)
+                .Include(o => o.UpdatedBy)
                 .ToListAsync();
         }
     }

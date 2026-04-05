@@ -4,6 +4,7 @@ using FirstApp.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace FirstApp.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260405110105_AddObjectTypeEntity")]
+    partial class AddObjectTypeEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -84,9 +87,6 @@ namespace FirstApp.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ObjectTypeId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -97,8 +97,6 @@ namespace FirstApp.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("ObjectTypeId");
 
                     b.HasIndex("UpdatedById");
 
@@ -334,11 +332,6 @@ namespace FirstApp.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("FirstApp.Models.ObjectType", "ObjectType")
-                        .WithMany("Repositories")
-                        .HasForeignKey("ObjectTypeId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "UpdatedBy")
                         .WithMany()
                         .HasForeignKey("UpdatedById")
@@ -346,8 +339,6 @@ namespace FirstApp.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("ObjectType");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -401,11 +392,6 @@ namespace FirstApp.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("FirstApp.Models.ObjectType", b =>
-                {
-                    b.Navigation("Repositories");
                 });
 #pragma warning restore 612, 618
         }

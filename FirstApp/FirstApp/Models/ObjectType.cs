@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.Runtime.InteropServices;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FirstApp.Models
 {
-    public class Repository
+    public class ObjectType
     {
         public int Id { get; set; }
 
@@ -24,9 +24,7 @@ namespace FirstApp.Models
 
         public IdentityUser? UpdatedBy { get; set; } = null!;
 
-        public int? ObjectTypeId { get; set; }
-
-        public ObjectType? ObjectType { get; set; } = null!;
+        public ICollection<Repository> Repositories { get; set; } = new List<Repository>();
     }
 }
         
