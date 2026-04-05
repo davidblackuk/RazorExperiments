@@ -8,6 +8,7 @@ namespace FirstApp.Data
     {
         public DbSet<Repository> Repositories { get; set; }
         public DbSet<ObjectType> ObjectTypes { get; set; }
+        public DbSet<PropertyType> PropertyTypes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,6 +42,27 @@ namespace FirstApp.Data
                 .HasOne(o => o.Repository)
                 .WithMany(r => r.ObjectTypes)
                 .HasForeignKey(o => o.RepositoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PropertyType>()
+                .ToTable("PropertyTypes");
+
+            modelBuilder.Entity<PropertyType>()
+                .HasOne(p => p.CreatedBy)
+                .WithMany()
+                .HasForeignKey(p => p.CreatedById)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<PropertyType>()
+                .HasOne(p => p.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(p => p.UpdatedById)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<PropertyType>()
+                .HasOne(p => p.ObjectType)
+                .WithMany(o => o.PropertyTypes)
+                .HasForeignKey(p => p.ObjectTypeId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
     }

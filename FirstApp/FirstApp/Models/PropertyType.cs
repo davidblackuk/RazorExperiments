@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace FirstApp.Models
 {
-    public class ObjectType
+    public class PropertyType
     {
         public int Id { get; set; }
 
@@ -24,11 +23,9 @@ namespace FirstApp.Models
 
         public IdentityUser? UpdatedBy { get; set; } = null!;
 
-        public required int RepositoryId { get; set; }
+        public required int ObjectTypeId { get; set; }
 
-        public Repository? Repository { get; set; } = null!;
-
-        public ICollection<PropertyType> PropertyTypes { get; set; } = new List<PropertyType>();
+        public ObjectType? ObjectType { get; set; } = null!;
     }
 }
         
