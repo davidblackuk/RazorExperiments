@@ -1,0 +1,66 @@
+@page
+@model FirstApp.Pages.Repositories.IndexModel
+
+@{
+    ViewData["Title"] = "Repositories";
+}
+
+<h1>Repositories</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Repositories[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Repositories[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Repositories[0].CreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Repositories[0].CreatedAt)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Repositories[0].UpdatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Repositories[0].UpdatedAt)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.Repositories) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedBy.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedAt)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

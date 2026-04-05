@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.Runtime.InteropServices;
 
 namespace FirstApp.Models
 {
@@ -19,9 +20,9 @@ namespace FirstApp.Models
 
         public required DateTime UpdatedAt { get; set; }
 
-        public required IdentityUser CreatedBy { get; set; }
+        public IdentityUser? CreatedBy { get; set; } = null!;
 
-        public required IdentityUser UpdatedBy { get; set; }
+        public IdentityUser? UpdatedBy { get; set; } = null!;
         
     }
 }
