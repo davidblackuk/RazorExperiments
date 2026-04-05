@@ -15,10 +15,10 @@ namespace FirstApp.Pages.ObjectTypes
             _context = context;
         }
 
-        public IActionResult OnGet()
+        public IActionResult OnGet(int? repositoryId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            
+
             if (string.IsNullOrEmpty(userId))
             {
                 return Forbid();
@@ -33,8 +33,10 @@ namespace FirstApp.Pages.ObjectTypes
                 CreatedAt = DateTime.UtcNow,
                 UpdatedById = userId,
                 UpdatedAt = DateTime.UtcNow,
+                RepositoryId = repositoryId ?? 0,
                 CreatedBy = null!,
-                UpdatedBy = null!
+                UpdatedBy = null!,
+                Repository = null!
             };
 
             return Page();
@@ -61,6 +63,7 @@ namespace FirstApp.Pages.ObjectTypes
             // Remove validation errors for navigation properties since they're not bound from the form
             ModelState.Remove("ObjectType.CreatedBy");
             ModelState.Remove("ObjectType.UpdatedBy");
+            ModelState.Remove("ObjectType.Repository");
 
             if (!ModelState.IsValid)
             {
@@ -69,6 +72,12 @@ namespace FirstApp.Pages.ObjectTypes
 
             _context.ObjectTypes.Add(ObjectType);
             await _context.SaveChangesAsync();
+
+            // If ObjectType was created from a Repository, redirect back to that Repository's details
+            if (ObjectType.RepositoryId > 0)
+            {
+                return RedirectToPage("/Repositories/Details", new { id = ObjectType.RepositoryId });
+            }
 
             return RedirectToPage("./Index");
         }

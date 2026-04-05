@@ -49,7 +49,43 @@
         </dd>
     </dl>
 </div>
+
+<div class="mt-4">
+    <h4>Object Types</h4>
+    <hr />
+    @if (Model.Repository.ObjectTypes.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var objectType in Model.Repository.ObjectTypes)
+                {
+                    <tr>
+                        <td>@objectType.Name</td>
+                        <td>@objectType.Description</td>
+                        <td>
+                            <a asp-page="/ObjectTypes/Details" asp-route-id="@objectType.Id">Details</a> |
+                            <a asp-page="/ObjectTypes/Edit" asp-route-id="@objectType.Id">Edit</a> |
+                            <a asp-page="/ObjectTypes/Delete" asp-route-id="@objectType.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No object types found.</p>
+    }
+</div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.Repository.Id">Edit</a> |
+    <a asp-page="/ObjectTypes/Create" asp-route-repositoryId="@Model.Repository.Id" class="btn btn-success">Add Object Type</a> |
     <a asp-page="./Index">Back to List</a>
 </div>

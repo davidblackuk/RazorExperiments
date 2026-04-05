@@ -24,7 +24,7 @@ namespace FirstApp.Models
 
         public IdentityUser? UpdatedBy { get; set; } = null!;
 
-        public int? RepositoryId { get; set; }
+        public required int RepositoryId { get; set; }
 
         public Repository? Repository { get; set; } = null!;
     }

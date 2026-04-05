@@ -25,6 +25,7 @@ namespace FirstApp.Pages.Repositories
             }
 
             var repository = await _context.Repositories
+                .Include(r => r.ObjectTypes)
                 .Include(r => r.CreatedBy)
                 .Include(r => r.UpdatedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
