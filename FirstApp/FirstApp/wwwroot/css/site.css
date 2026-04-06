@@ -6,7 +6,7 @@ body {
     --baby-blue-ice: #92b4f4ff;
     --pale-sky: #cfdee7ff;
 
-    background: linear-gradient(135deg, var(--space-indigo) 0%, var(--sapphire-sky) 100%);
+    background: linear-gradient(135deg, var(--baby-blue-ice) 0%, var(--pale-sky) 100%);
     min-height: 100vh;
 }
 html {

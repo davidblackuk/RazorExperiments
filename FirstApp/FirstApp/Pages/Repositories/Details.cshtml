@@ -5,8 +5,6 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
-
 <div class="card">
     <div class="card-header">
         <h4 class="mb-0">Repository: @Model.Repository.Name</h4>
@@ -53,39 +51,42 @@
     </div>
 </div>
 
-<div class="mt-4">
-    <h4>Object Types</h4>
-    <hr />
-    @if (Model.Repository.ObjectTypes.Any())
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var objectType in Model.Repository.ObjectTypes)
-                {
+<div class="mt-4 card">
+    <div class="card-header">
+        <h4 class="mb-0">Object Types</h4>
+    </div>
+    <div class="card-body">
+        @if (Model.Repository.ObjectTypes.Any())
+        {
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@objectType.Name</td>
-                        <td>@objectType.Description</td>
-                        <td>
-                            <a asp-page="/ObjectTypes/Details" asp-route-id="@objectType.Id">Details</a> |
-                            <a asp-page="/ObjectTypes/Edit" asp-route-id="@objectType.Id">Edit</a> |
-                            <a asp-page="/ObjectTypes/Delete" asp-route-id="@objectType.Id">Delete</a>
-                        </td>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>No object types found.</p>
-    }
+                </thead>
+                <tbody>
+                    @foreach (var objectType in Model.Repository.ObjectTypes)
+                    {
+                        <tr>
+                            <td>@objectType.Name</td>
+                            <td>@objectType.Description</td>
+                            <td>
+                                <a asp-page="/ObjectTypes/Details" asp-route-id="@objectType.Id">Details</a> |
+                                <a asp-page="/ObjectTypes/Edit" asp-route-id="@objectType.Id">Edit</a> |
+                                <a asp-page="/ObjectTypes/Delete" asp-route-id="@objectType.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No object types found.</p>
+        }
+    </div>
 </div>
 
 <div>

@@ -5,8 +5,6 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
-
 <div class="card">
     <div class="card-header">
         <h4 class="mb-0">Object Type: @Model.ObjectType.Name</h4>
@@ -53,39 +51,42 @@
     </div>
 </div>
 
-<div class="mt-4">
-    <h4>Property Types</h4>
-    <hr />
-    @if (Model.ObjectType.PropertyTypes.Any())
-    {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Description</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var propertyType in Model.ObjectType.PropertyTypes)
-                {
+<div class="mt-4 card">
+    <div class="card-header">
+        <h4 class="mb-0">Property Types</h4>
+    </div>
+    <div class="card-body">
+        @if (Model.ObjectType.PropertyTypes.Any())
+        {
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>@propertyType.Name</td>
-                        <td>@propertyType.Description</td>
-                        <td>
-                            <a asp-page="/PropertyTypes/Details" asp-route-id="@propertyType.Id">Details</a> |
-                            <a asp-page="/PropertyTypes/Edit" asp-route-id="@propertyType.Id">Edit</a> |
-                            <a asp-page="/PropertyTypes/Delete" asp-route-id="@propertyType.Id">Delete</a>
-                        </td>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
-    }
-    else
-    {
-        <p>No property types found.</p>
-    }
+                </thead>
+                <tbody>
+                    @foreach (var propertyType in Model.ObjectType.PropertyTypes)
+                    {
+                        <tr>
+                            <td>@propertyType.Name</td>
+                            <td>@propertyType.Description</td>
+                            <td>
+                                <a asp-page="/PropertyTypes/Details" asp-route-id="@propertyType.Id">Details</a> |
+                                <a asp-page="/PropertyTypes/Edit" asp-route-id="@propertyType.Id">Edit</a> |
+                                <a asp-page="/PropertyTypes/Delete" asp-route-id="@propertyType.Id">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No property types found.</p>
+        }
+    </div>
 </div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.ObjectType.Id">Edit</a> |
