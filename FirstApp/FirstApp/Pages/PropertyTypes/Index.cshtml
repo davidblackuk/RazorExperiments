@@ -1,0 +1,60 @@
+@page
+@model FirstApp.Pages.PropertyTypes.IndexModel
+
+@{
+    ViewData["Title"] = "Property Types";
+}
+
+<h1>Property Types</h1>
+
+<p>
+    <a asp-page="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.PropertyType[0].Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PropertyType[0].Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PropertyType[0].ObjectType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PropertyType[0].CreatedBy)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PropertyType[0].CreatedAt)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model.PropertyType) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ObjectType.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedBy.UserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreatedAt)
+            </td>
+            <td>
+                <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

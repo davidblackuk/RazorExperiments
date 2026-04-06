@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using FirstApp.Data;
 using FirstApp.Models;
 
-namespace FirstApp.Pages.ObjectTypes
+namespace FirstApp.Pages.PropertyTypes
 {
     public class EditModel : PageModel
     {
@@ -17,7 +17,7 @@ namespace FirstApp.Pages.ObjectTypes
         }
 
         [BindProperty]
-        public ObjectType ObjectType { get; set; } = default!;
+        public PropertyType PropertyType { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -26,14 +26,14 @@ namespace FirstApp.Pages.ObjectTypes
                 return NotFound();
             }
 
-            var objectType = await _context.ObjectTypes.FirstOrDefaultAsync(m => m.Id == id);
+            var propertyType = await _context.PropertyTypes.FirstOrDefaultAsync(m => m.Id == id);
             
-            if (objectType == null)
+            if (propertyType == null)
             {
                 return NotFound();
             }
             
-            ObjectType = objectType;
+            PropertyType = propertyType;
             return Page();
         }
 
@@ -47,42 +47,43 @@ namespace FirstApp.Pages.ObjectTypes
             }
 
             // Load the existing entity from the database
-            var existingObjectType = await _context.ObjectTypes
+            var existingPropertyType = await _context.PropertyTypes
                 .AsNoTracking()
-                .FirstOrDefaultAsync(o => o.Id == ObjectType.Id);
+                .FirstOrDefaultAsync(p => p.Id == PropertyType.Id);
 
-            if (existingObjectType == null)
+            if (existingPropertyType == null)
             {
                 return NotFound();
             }
 
             // Update only the fields that should change
-            ObjectType.UpdatedById = userId;
-            ObjectType.UpdatedAt = DateTime.UtcNow;
+            PropertyType.UpdatedById = userId;
+            PropertyType.UpdatedAt = DateTime.UtcNow;
 
             // Remove validation errors for navigation properties since they're not bound from the form
-            ModelState.Remove("ObjectType.CreatedBy");
-            ModelState.Remove("ObjectType.UpdatedBy");
+            ModelState.Remove("PropertyType.CreatedBy");
+            ModelState.Remove("PropertyType.UpdatedBy");
+            ModelState.Remove("PropertyType.ObjectType");
 
             if (!ModelState.IsValid)
             {
                 return Page();
             }
 
-            _context.Attach(ObjectType).State = EntityState.Modified;
+            _context.Attach(PropertyType).State = EntityState.Modified;
             // Don't modify the navigation properties
-            _context.Entry(ObjectType).Reference(o => o.CreatedBy).IsModified = false;
-            _context.Entry(ObjectType).Reference(o => o.UpdatedBy).IsModified = false;
-            _context.Entry(ObjectType).Reference(o => o.Repository).IsModified = false;
+            _context.Entry(PropertyType).Reference(p => p.CreatedBy).IsModified = false;
+            _context.Entry(PropertyType).Reference(p => p.UpdatedBy).IsModified = false;
+            _context.Entry(PropertyType).Reference(p => p.ObjectType).IsModified = false;
 
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Index");
         }
 
-        private bool ObjectTypeExists(int id)
+        private bool PropertyTypeExists(int id)
         {
-            return _context.ObjectTypes.Any(e => e.Id == id);
+            return _context.PropertyTypes.Any(e => e.Id == id);
         }
     }
 }

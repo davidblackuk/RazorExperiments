@@ -1,7 +1,13 @@
 
-
+body {
+    --space-indigo: #141b41ff;
+    --sapphire-sky: #4472caff;
+    --glaucous: #5e7ce2ff;
+    --baby-blue-ice: #92b4f4ff;
+    --pale-sky: #cfdee7ff;
+}
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {

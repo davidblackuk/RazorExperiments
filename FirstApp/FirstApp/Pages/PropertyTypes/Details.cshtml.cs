@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using FirstApp.Data;
 using FirstApp.Models;
 
-namespace FirstApp.Pages.ObjectTypes
+namespace FirstApp.Pages.PropertyTypes
 {
     public class DetailsModel : PageModel
     {
@@ -15,7 +15,7 @@ namespace FirstApp.Pages.ObjectTypes
             _context = context;
         }
 
-        public ObjectType ObjectType { get; set; } = default!;
+        public PropertyType PropertyType { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
         {
@@ -24,18 +24,18 @@ namespace FirstApp.Pages.ObjectTypes
                 return NotFound();
             }
 
-            var objectType = await _context.ObjectTypes
-                .Include(o => o.PropertyTypes)
-                .Include(o => o.CreatedBy)
-                .Include(o => o.UpdatedBy)
+            var propertyType = await _context.PropertyTypes
+                .Include(p => p.ObjectType)
+                .Include(p => p.CreatedBy)
+                .Include(p => p.UpdatedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
-            if (objectType == null)
+            if (propertyType == null)
             {
                 return NotFound();
             }
 
-            ObjectType = objectType;
+            PropertyType = propertyType;
             return Page();
         }
     }

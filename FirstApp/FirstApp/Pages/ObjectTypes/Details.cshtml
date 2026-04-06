@@ -49,7 +49,43 @@
         </dd>
     </dl>
 </div>
+
+<div class="mt-4">
+    <h4>Property Types</h4>
+    <hr />
+    @if (Model.ObjectType.PropertyTypes.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var propertyType in Model.ObjectType.PropertyTypes)
+                {
+                    <tr>
+                        <td>@propertyType.Name</td>
+                        <td>@propertyType.Description</td>
+                        <td>
+                            <a asp-page="/PropertyTypes/Details" asp-route-id="@propertyType.Id">Details</a> |
+                            <a asp-page="/PropertyTypes/Edit" asp-route-id="@propertyType.Id">Edit</a> |
+                            <a asp-page="/PropertyTypes/Delete" asp-route-id="@propertyType.Id">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No property types found.</p>
+    }
+</div>
 <div>
     <a asp-page="./Edit" asp-route-id="@Model.ObjectType.Id">Edit</a> |
+    <a asp-page="/PropertyTypes/Create" asp-route-objectTypeId="@Model.ObjectType.Id" class="btn btn-success">Add Property Type</a> |
     <a asp-page="./Index">Back to List</a>
 </div>
