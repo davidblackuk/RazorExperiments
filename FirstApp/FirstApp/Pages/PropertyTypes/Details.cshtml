@@ -8,7 +8,10 @@
 
 <div class="card mt-5">
     <div class="card-header">
-        <h4 class="mb-0">Property Type: @Model.PropertyType.Name</h4>
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Property Type: @Model.PropertyType.Name</h4>
+            <a asp-page="./Edit" asp-route-id="@Model.PropertyType.Id" class="btn btn-primary btn-sm">Edit</a>
+        </div>
     </div>
     <div class="card-body">
         <dl class="row">
@@ -56,8 +59,4 @@
             </dd>
         </dl>
     </div>
-</div>
-<div>
-    <a asp-page="./Edit" asp-route-id="@Model.PropertyType.Id">Edit</a> |
-    <a asp-page="./Index">Back to List</a>
 </div>
