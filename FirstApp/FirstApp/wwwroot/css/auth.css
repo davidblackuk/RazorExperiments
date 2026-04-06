@@ -1,0 +1,155 @@
+﻿/* Authentication Layout Styles */
+.auth-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--space-indigo) 0%, var(--sapphire-sky) 100%);
+    padding: 2rem 1rem;
+}
+
+.auth-container {
+    width: 100%;
+    max-width: 450px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    padding: 2.5rem;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-brand {
+    text-decoration: none;
+    color: var(--space-indigo);
+}
+
+.auth-brand h2 {
+    margin: 0;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.auth-brand:hover {
+    color: var(--sapphire-sky);
+}
+
+.auth-main {
+    margin-bottom: 2rem;
+}
+
+.auth-main h1 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--space-indigo);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.auth-main h2 {
+    font-size: 1.125rem;
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 400;
+}
+
+.auth-main h4 {
+    font-size: 1.125rem;
+    color: #6c757d;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.auth-footer {
+    text-align: center;
+    padding-top: 1.5rem;
+    border-top: 1px solid #e9ecef;
+    margin-top: 2rem;
+}
+
+.auth-footer p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+/* Form styling for auth pages */
+.auth-main .form-floating {
+    margin-bottom: 1rem;
+}
+
+.auth-main .btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    font-weight: 500;
+    margin-top: 1rem;
+    background-color: var(--sapphire-sky);
+    border-color: var(--sapphire-sky);
+}
+
+.auth-main .btn-primary:hover {
+    background-color: var(--space-indigo);
+    border-color: var(--space-indigo);
+}
+
+.auth-main .text-danger {
+    margin-top: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.auth-main hr {
+    margin: 1.5rem 0;
+    opacity: 0.1;
+}
+
+/* Remove default column padding for cleaner look */
+.auth-main .row {
+    margin: 0;
+}
+
+.auth-main .col-md-4,
+.auth-main .col-md-6,
+.auth-main .col-md-8 {
+    padding: 0;
+    max-width: 100%;
+}
+
+/* Links in auth pages */
+.auth-main a {
+    color: var(--sapphire-sky);
+}
+
+.auth-main a:hover {
+    color: var(--space-indigo);
+}
+
+/* Checkbox styling */
+.auth-main .checkbox {
+    margin: 1rem 0;
+}
+
+/* External login section */
+.auth-main section + section {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e9ecef;
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .auth-container {
+        padding: 2rem 1.5rem;
+    }
+
+    .auth-brand h2 {
+        font-size: 1.75rem;
+    }
+
+    .auth-main h1 {
+        font-size: 1.5rem;
+    }
+}
