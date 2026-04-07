@@ -26,18 +26,15 @@
     </header>
 
     <div class="auth-wrapper">
-        <div class="auth-container">
-            <header class="auth-header">
-                <a class="auth-brand" asp-area="" asp-page="/Index">
-                    <h2>FirstApp</h2>
-                </a>
-            </header>
-            <main class="auth-main">
+        <div class="card shadow glass-dark" style="max-width: 450px; width: 100%;">
+            <div class="card-header text-center">
+                
+                <h2 class="glass-text mb-0">@ViewData["Title"]</h2>
+            </div>
+            <div class="card-body" style="padding: 2.5rem;">
                 @RenderBody()
-            </main>
-            <footer class="auth-footer">
-                <p>&copy; @DateTime.Now.Year - FirstApp</p>
-            </footer>
+            </div>
+           
         </div>
     </div>
 

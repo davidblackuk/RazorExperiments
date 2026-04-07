@@ -26,7 +26,7 @@
 
 /* Text colors for content on glass surfaces */
 .glass-text {
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba(255, 255, 255, 0.85);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
@@ -77,7 +77,7 @@
 .glass label,
 .glass-light label,
 .glass-dark label {
-    color: rgba(255, 255, 255, 0.95);
+    color: rgba(255, 255, 255, 0.85);
     font-weight: 500;
 }
 
@@ -87,4 +87,19 @@
 .glass-dark .btn {
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+}
+
+/* anchors on glass surfaces */
+
+.glass-dark a {
+    color: var(--baby-blue-ice);
+}
+
+h1.glass-text,
+h2.glass-text,
+h3.glass-text,
+h4.glass-text,
+h5.glass-text,
+h6.glass-text {
+    color: var(--pale-sky);
 }
