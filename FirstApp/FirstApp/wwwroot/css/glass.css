@@ -1,0 +1,90 @@
+﻿
+/* Glassomorphic styles - can be applied to dialogs, cards, or any container */
+.glass {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+}
+
+.glass-light {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.15);
+}
+
+.glass-dark {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+}
+
+/* Text colors for content on glass surfaces */
+.glass-text {
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.glass-text-dark {
+    color: rgba(20, 27, 65, 0.9);
+}
+
+/* Card header styling for glass cards */
+.glass .card-header,
+.glass-light .card-header,
+.glass-dark .card-header {
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Card footer styling for glass cards */
+.glass .card-footer,
+.glass-light .card-footer,
+.glass-dark .card-footer {
+    background: rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Form controls on glass surfaces */
+.glass .form-control,
+.glass-light .form-control,
+.glass-dark .form-control {
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: rgba(20, 27, 65, 0.9);
+}
+
+    .glass .form-control::placeholder,
+    .glass-light .form-control::placeholder,
+    .glass-dark .form-control::placeholder {
+        color: rgba(20, 27, 65, 0.5);
+    }
+
+    .glass .form-control:focus,
+    .glass-light .form-control:focus,
+    .glass-dark .form-control:focus {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+        color: rgba(20, 27, 65, 0.95);
+    }
+
+/* Labels on glass surfaces */
+.glass label,
+.glass-light label,
+.glass-dark label {
+    color: rgba(255, 255, 255, 0.95);
+    font-weight: 500;
+}
+
+/* Buttons on glass surfaces */
+.glass .btn,
+.glass-light .btn,
+.glass-dark .btn {
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
