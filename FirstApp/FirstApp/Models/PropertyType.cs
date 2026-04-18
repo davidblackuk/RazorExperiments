@@ -25,6 +25,12 @@ namespace FirstApp.Models
         public required string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this is a system-defined property type.
+        /// System properties are typically read-only and cannot be deleted by users.
+        /// </summary>
+        public bool IsSystemProperty { get; set; }
+
+        /// <summary>
         /// Gets or sets the ID of the user who created this property type.
         /// </summary>
         public required string CreatedById { get; set; }
