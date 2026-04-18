@@ -1,5 +1,4 @@
 using FirstApp.Data;
-using FirstApp.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,11 +18,11 @@ builder.Services.AddRazorPages(options =>
 //    options.Conventions.AllowAnonymousToPage("/Index");
   
 });
-builder.Services.AddScoped<SystemPropertyService>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();

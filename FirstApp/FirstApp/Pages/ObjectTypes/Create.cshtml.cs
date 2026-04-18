@@ -52,6 +52,22 @@ namespace FirstApp.Pages.ObjectTypes
         [BindProperty]
         public ObjectType ObjectType { get; set; } = default!;
 
+        private static PropertyType CreatePropertyType(string name, string description, PropertyDataType dataType, string userId, DateTime now)
+        {
+            return new PropertyType
+            {
+                Name = name,
+                Description = description,
+                DataType = dataType,
+                IsSystemProperty = true,
+                ObjectTypeId = 0,
+                CreatedById = userId,
+                CreatedAt = now,
+                UpdatedById = userId,
+                UpdatedAt = now
+            };
+        }
+
         public async Task<IActionResult> OnPostAsync()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -72,90 +88,13 @@ namespace FirstApp.Pages.ObjectTypes
             // Add system properties to the ObjectType before saving
             ObjectType.PropertyTypes = new List<PropertyType>
             {
-                new PropertyType
-                {
-                    Name = "Name",
-                    Description = "The name of the object",
-                    DataType = PropertyDataType.String,
-                    IsSystemProperty = true,
-                    ObjectTypeId = 0,
-                    CreatedById = userId,
-                    CreatedAt = now,
-                    UpdatedById = userId,
-                    UpdatedAt = now,
-                },
-                new PropertyType
-                {
-                    Name = "Description",
-                    Description = "A detailed description of the object",
-                    DataType = PropertyDataType.Memo,
-                    IsSystemProperty = true,
-                    ObjectTypeId = 0,
-                    CreatedById = userId,
-                    CreatedAt = now,
-                    UpdatedById = userId,
-                    UpdatedAt = now,
-                },
-                new PropertyType
-                {
-                    Name = "Who Created",
-                    Description = "The user who created this object",
-                    DataType = PropertyDataType.String,
-                    IsSystemProperty = true,
-                    ObjectTypeId = 0,
-                    CreatedById = userId,
-                    CreatedAt = now,
-                    UpdatedById = userId,
-                    UpdatedAt = now,
-                },
-                new PropertyType
-                {
-                    Name = "When Created",
-                    Description = "The date and time when this object was created",
-                    DataType = PropertyDataType.DateTime,
-                    IsSystemProperty = true,
-                    ObjectTypeId = 0,
-                    CreatedById = userId,
-                    CreatedAt = now,
-                    UpdatedById = userId,
-                    UpdatedAt = now,
-                },
-                new PropertyType
-                {
-                    Name = "Who Updated",
-                    Description = "The user who last updated this object",
-                    DataType = PropertyDataType.String,
-                    IsSystemProperty = true,
-                    ObjectTypeId = 0,
-                    CreatedById = userId,
-                    CreatedAt = now,
-                    UpdatedById = userId,
-                    UpdatedAt = now,
-                },
-                new PropertyType
-                {
-                    Name = "When Updated",
-                    Description = "The date and time when this object was last updated",
-                    DataType = PropertyDataType.DateTime,
-                    IsSystemProperty = true,
-                    ObjectTypeId = 0,
-                    CreatedById = userId,
-                    CreatedAt = now,
-                    UpdatedById = userId,
-                    UpdatedAt = now,
-                },
-                new PropertyType
-                {
-                    Name = "Category",
-                    Description = "The category this object belongs to",
-                    DataType = PropertyDataType.String,
-                    IsSystemProperty = true,
-                    ObjectTypeId = 0,
-                    CreatedById = userId,
-                    CreatedAt = now,
-                    UpdatedById = userId,
-                    UpdatedAt = now,
-                }
+                CreatePropertyType("Name", "The name of the object", PropertyDataType.String, userId, now),
+                CreatePropertyType("Description", "A detailed description of the object", PropertyDataType.Memo, userId, now),
+                CreatePropertyType("Who Created", "The user who created this object", PropertyDataType.String, userId, now),
+                CreatePropertyType("When Created", "The date and time when this object was created", PropertyDataType.DateTime, userId, now),
+                CreatePropertyType("Who Updated", "The user who last updated this object", PropertyDataType.String, userId, now),
+                CreatePropertyType("When Updated", "The date and time when this object was last updated", PropertyDataType.DateTime, userId, now),
+                CreatePropertyType("Category", "The category this object belongs to", PropertyDataType.String, userId, now)
             };
 
             // Remove validation errors for navigation properties since they're not bound from the form
