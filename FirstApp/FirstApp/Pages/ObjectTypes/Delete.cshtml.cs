@@ -48,12 +48,14 @@ namespace FirstApp.Pages.ObjectTypes
             }
 
             var objectType = await _context.ObjectTypes.FindAsync(id);
-            
+
             if (objectType != null)
             {
+                var repositoryId = objectType.RepositoryId;
                 ObjectType = objectType;
                 _context.ObjectTypes.Remove(ObjectType);
                 await _context.SaveChangesAsync();
+                return RedirectToPage("/Repositories/Details", new { id = repositoryId });
             }
 
             return RedirectToPage("./Index");

@@ -31,7 +31,41 @@
     </div>
     <div class="card-footer text-center">
         <button type="submit" form="objectTypeForm" class="btn btn-primary btn-sm">Create</button>
-        <a asp-page="Index" class="btn btn-secondary btn-sm">Cancel</a>
+        <a asp-page="/Repositories/Details" asp-route-id="@Model.ObjectType.RepositoryId" class="btn btn-secondary btn-sm">Cancel</a>
+    </div>
+</div>
+
+<div class="mt-4 card shadow">
+    <div class="card-header">
+        <h4 class="mb-0">System Property Types</h4>
+    </div>
+    <div class="card-body">
+        @if (Model.ObjectType.PropertyTypes.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Data Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var propertyType in Model.ObjectType.PropertyTypes)
+                    {
+                        <tr>
+                            <td>@propertyType.Name</td>
+                            <td>@propertyType.Description</td>
+                            <td>@propertyType.DataType</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No system property types defined.</p>
+        }
     </div>
 </div>
 

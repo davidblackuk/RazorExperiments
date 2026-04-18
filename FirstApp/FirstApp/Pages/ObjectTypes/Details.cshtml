@@ -5,6 +5,16 @@
     ViewData["Title"] = "Details";
 }
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-page="/Repositories/Details" asp-route-id="@Model.ObjectType.RepositoryId">
+                <i class="fa-solid fa-arrow-left"></i> Back to Repository: @Model.ObjectType.Repository.Name
+            </a>
+        </li>
+    </ol>
+</nav>
+
 <div class="card shadow mt-5">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">

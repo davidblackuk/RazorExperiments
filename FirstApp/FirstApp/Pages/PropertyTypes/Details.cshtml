@@ -5,6 +5,15 @@
     ViewData["Title"] = "Details";
 }
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-page="/ObjectTypes/Details" asp-route-id="@Model.PropertyType.ObjectTypeId">
+                <i class="fa-solid fa-arrow-left"></i> Back to Object Type: @Model.PropertyType.ObjectType.Name
+            </a>
+        </li>
+    </ol>
+</nav>
 
 <div class="card shadow mt-5">
     <div class="card-header">
