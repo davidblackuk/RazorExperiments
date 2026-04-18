@@ -27,6 +27,12 @@
                 <textarea asp-for="PropertyType.Description" class="form-control" rows="4"></textarea>
                 <span asp-validation-for="PropertyType.Description" class="text-danger"></span>
             </div>
+            <div class="form-group mb-3">
+                <label asp-for="PropertyType.DataType" class="control-label"></label>
+                <select asp-for="PropertyType.DataType" class="form-control" asp-items="Html.GetEnumSelectList<FirstApp.Models.PropertyDataType>()">
+                </select>
+                <span asp-validation-for="PropertyType.DataType" class="text-danger"></span>
+            </div>
         </form>
     </div>
     <div class="card-footer text-center">
