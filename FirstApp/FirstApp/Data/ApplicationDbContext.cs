@@ -63,7 +63,7 @@ namespace FirstApp.Data
                 .HasOne(p => p.ObjectType)
                 .WithMany(o => o.PropertyTypes)
                 .HasForeignKey(p => p.ObjectTypeId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

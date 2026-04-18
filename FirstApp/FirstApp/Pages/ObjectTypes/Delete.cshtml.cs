@@ -28,6 +28,7 @@ namespace FirstApp.Pages.ObjectTypes
             var objectType = await _context.ObjectTypes
                 .Include(o => o.CreatedBy)
                 .Include(o => o.UpdatedBy)
+                .Include(o => o.PropertyTypes)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (objectType == null)
