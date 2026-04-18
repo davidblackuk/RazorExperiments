@@ -26,13 +26,16 @@ namespace FirstApp.Pages.PropertyTypes
                 return NotFound();
             }
 
-            var propertyType = await _context.PropertyTypes.FirstOrDefaultAsync(m => m.Id == id);
-            
+            var propertyType = await _context.PropertyTypes
+                .Include(p => p.ObjectType)
+                    .ThenInclude(o => o.Repository)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (propertyType == null)
             {
                 return NotFound();
             }
-            
+
             PropertyType = propertyType;
             return Page();
         }
@@ -78,7 +81,7 @@ namespace FirstApp.Pages.PropertyTypes
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/ObjectTypes/Details", new { id = PropertyType.ObjectTypeId });
         }
 
         private bool PropertyTypeExists(int id)

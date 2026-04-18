@@ -5,6 +5,16 @@
     ViewData["Title"] = "Create Object Type";
 }
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="#" id="backToRepository" data-url="@Url.Page("/Repositories/Details", new { id = Model.ObjectType.RepositoryId })">
+                <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository.Name
+            </a>
+        </li>
+    </ol>
+</nav>
+
 <div class="card shadow mt-5">
     <div class="card-header">
         <h4 class="mb-0">Create Object Type</h4>
@@ -71,5 +81,36 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        let formModified = false;
+        const form = document.getElementById('objectTypeForm');
+
+        // Track form changes
+        form.addEventListener('input', function() {
+            formModified = true;
+        });
+
+        // Reset flag on form submit
+        form.addEventListener('submit', function() {
+            formModified = false;
+        });
+
+        // Warn before navigating away if form is modified
+        document.getElementById('backToRepository').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (formModified && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
+                return;
+            }
+            window.location.href = this.getAttribute('data-url');
+        });
+
+        // Warn on browser back/refresh
+        window.addEventListener('beforeunload', function(e) {
+            if (formModified) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
 }
 

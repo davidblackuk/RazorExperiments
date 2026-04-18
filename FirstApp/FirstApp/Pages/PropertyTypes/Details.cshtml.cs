@@ -26,6 +26,7 @@ namespace FirstApp.Pages.PropertyTypes
 
             var propertyType = await _context.PropertyTypes
                 .Include(p => p.ObjectType)
+                    .ThenInclude(o => o.Repository)
                 .Include(p => p.CreatedBy)
                 .Include(p => p.UpdatedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);

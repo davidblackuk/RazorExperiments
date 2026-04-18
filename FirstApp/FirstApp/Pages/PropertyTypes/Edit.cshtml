@@ -5,6 +5,21 @@
     ViewData["Title"] = "Edit Property Type";
 }
 
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="#" id="backToRepository" data-url="@Url.Page("/Repositories/Details", new { id = Model.PropertyType.ObjectType.RepositoryId })">
+                <i class="fa-solid fa-database"></i> @Model.PropertyType.ObjectType.Repository.Name
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a href="#" id="backToObjectType" data-url="@Url.Page("/ObjectTypes/Details", new { id = Model.PropertyType.ObjectTypeId })">
+                <i class="fa-solid fa-cube"></i> @Model.PropertyType.ObjectType.Name
+            </a>
+        </li>
+    </ol>
+</nav>
+
 <div class="card shadow mt-5">
     <div class="card-header">
         <h4 class="mb-0">Edit Property Type</h4>
@@ -38,11 +53,62 @@
     </div>
     <div class="card-footer text-center">
         <button type="submit" form="propertyTypeForm" class="btn btn-primary btn-sm">Save</button>
-        <a asp-page="./Index" class="btn btn-secondary btn-sm">Cancel</a>
+        <a href="#" id="cancelButton" data-url="@Url.Page("/ObjectTypes/Details", new { id = Model.PropertyType.ObjectTypeId })" class="btn btn-secondary btn-sm">Cancel</a>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        let formModified = false;
+        const form = document.getElementById('propertyTypeForm');
+
+        // Track form changes
+        form.addEventListener('input', function() {
+            formModified = true;
+        });
+
+        // Reset flag on form submit
+        form.addEventListener('submit', function() {
+            formModified = false;
+        });
+
+        // Warn before navigating away if form is modified
+        function confirmLeave(e) {
+            if (formModified && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
+                return false;
+            }
+            return true;
+        }
+
+        document.getElementById('backToRepository').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirmLeave(e)) {
+                window.location.href = this.getAttribute('data-url');
+            }
+        });
+
+        document.getElementById('backToObjectType').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirmLeave(e)) {
+                window.location.href = this.getAttribute('data-url');
+            }
+        });
+
+        document.getElementById('cancelButton').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirmLeave(e)) {
+                window.location.href = this.getAttribute('data-url');
+            }
+        });
+
+        // Warn on browser back/refresh
+        window.addEventListener('beforeunload', function(e) {
+            if (formModified) {
+                e.preventDefault();
+                e.returnValue = '';
+            }
+        });
+    </script>
 }
 

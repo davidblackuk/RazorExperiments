@@ -26,13 +26,15 @@ namespace FirstApp.Pages.ObjectTypes
                 return NotFound();
             }
 
-            var objectType = await _context.ObjectTypes.FirstOrDefaultAsync(m => m.Id == id);
-            
+            var objectType = await _context.ObjectTypes
+                .Include(o => o.Repository)
+                .FirstOrDefaultAsync(m => m.Id == id);
+
             if (objectType == null)
             {
                 return NotFound();
             }
-            
+
             ObjectType = objectType;
             return Page();
         }
@@ -77,7 +79,7 @@ namespace FirstApp.Pages.ObjectTypes
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("/Repositories/Details", new { id = ObjectType.RepositoryId });
         }
 
         private bool ObjectTypeExists(int id)

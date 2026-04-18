@@ -33,6 +33,13 @@ namespace FirstApp.Pages.ObjectTypes
 
             var now = DateTime.UtcNow;
 
+            // Load the repository for display in breadcrumb
+            var repository = _context.Repositories.Find(repositoryId.Value);
+            if (repository == null)
+            {
+                return NotFound();
+            }
+
             // Initialize ObjectType with default values for audit fields
             ObjectType = new ObjectType
             {
@@ -45,7 +52,7 @@ namespace FirstApp.Pages.ObjectTypes
                 RepositoryId = repositoryId.Value,
                 CreatedBy = null!,
                 UpdatedBy = null!,
-                Repository = null!
+                Repository = repository
             };
 
             // Add system properties to the ObjectType for display

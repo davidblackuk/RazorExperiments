@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore;
 using FirstApp.Data;
 using FirstApp.Models;
 
@@ -15,7 +16,7 @@ namespace FirstApp.Pages.PropertyTypes
             _context = context;
         }
 
-        public IActionResult OnGet(int? objectTypeId)
+        public async Task<IActionResult> OnGetAsync(int? objectTypeId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -24,19 +25,36 @@ namespace FirstApp.Pages.PropertyTypes
                 return Forbid();
             }
 
+            if (!objectTypeId.HasValue || objectTypeId.Value <= 0)
+            {
+                return NotFound();
+            }
+
+            // Load ObjectType with Repository for breadcrumb
+            var objectType = await _context.ObjectTypes
+                .Include(o => o.Repository)
+                .FirstOrDefaultAsync(o => o.Id == objectTypeId.Value);
+
+            if (objectType == null)
+            {
+                return NotFound();
+            }
+
+            var now = DateTime.UtcNow;
+
             // Initialize PropertyType with default values for audit fields
             PropertyType = new PropertyType
             {
                 Name = string.Empty,
                 Description = string.Empty,
                 CreatedById = userId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = now,
                 UpdatedById = userId,
-                UpdatedAt = DateTime.UtcNow,
-                ObjectTypeId = objectTypeId ?? 0,
+                UpdatedAt = now,
+                ObjectTypeId = objectTypeId.Value,
                 CreatedBy = null!,
                 UpdatedBy = null!,
-                ObjectType = null!
+                ObjectType = objectType
             };
 
             return Page();

@@ -29,6 +29,7 @@ namespace FirstApp.Pages.ObjectTypes
                 .Include(o => o.CreatedBy)
                 .Include(o => o.UpdatedBy)
                 .Include(o => o.PropertyTypes)
+                .Include(o => o.Repository)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (objectType == null)

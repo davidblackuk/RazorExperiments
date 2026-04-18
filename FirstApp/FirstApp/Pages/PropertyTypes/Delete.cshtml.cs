@@ -27,6 +27,7 @@ namespace FirstApp.Pages.PropertyTypes
 
             var propertyType = await _context.PropertyTypes
                 .Include(p => p.ObjectType)
+                    .ThenInclude(o => o.Repository)
                 .Include(p => p.CreatedBy)
                 .Include(p => p.UpdatedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -48,12 +49,14 @@ namespace FirstApp.Pages.PropertyTypes
             }
 
             var propertyType = await _context.PropertyTypes.FindAsync(id);
-            
+
             if (propertyType != null)
             {
+                var objectTypeId = propertyType.ObjectTypeId;
                 PropertyType = propertyType;
                 _context.PropertyTypes.Remove(PropertyType);
                 await _context.SaveChangesAsync();
+                return RedirectToPage("/ObjectTypes/Details", new { id = objectTypeId });
             }
 
             return RedirectToPage("./Index");
