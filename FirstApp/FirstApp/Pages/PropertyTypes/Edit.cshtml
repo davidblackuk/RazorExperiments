@@ -8,6 +8,11 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
+            <a asp-page="/Repositories/Index">
+                <i class="fa-solid fa-list"></i> Repositories
+            </a>
+        </li>
+        <li class="breadcrumb-item">
             <a href="#" id="backToRepository" data-url="@Url.Page("/Repositories/Details", new { id = Model.PropertyType.ObjectType.RepositoryId })">
                 <i class="fa-solid fa-database"></i> @Model.PropertyType.ObjectType.Repository.Name
             </a>
