@@ -3,7 +3,7 @@ body {
     --space-indigo: #141b41ff;
     --sapphire-sky: #4472caff;
     --glaucous: #5e7ce2ff;
-    --baby-blue-ice: #92b4f4ff;
+    --baby-blue-ice : #92b4f4ff;
     --pale-sky: #cfdee7ff;
 
     background: linear-gradient(135deg, var(--sapphire-sky) 0%, var(--glaucous) 100%);
@@ -54,3 +54,26 @@ body {
     .navbar-brand:hover {
         color: rgba(255, 255, 255, 0.8) !important;
     }
+
+/* Breadcrumb styles */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0.75rem 0;
+}
+
+.breadcrumb-item {
+    font-size: 1.25rem;
+}
+
+.breadcrumb-item a {
+    color: white !important;
+    text-decoration: none;
+}
+
+.breadcrumb-item a:hover {
+    color: var(--pale-sky) !important;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: white;
+}
