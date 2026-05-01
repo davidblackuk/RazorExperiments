@@ -28,7 +28,7 @@ namespace FirstApp.Pages.ObjectTypes
             if (!repositoryId.HasValue || repositoryId.Value <= 0)
             {
                 TempData["ErrorMessage"] = "ObjectTypes must be created from within a Repository. Please select a Repository first.";
-                return RedirectToPage("/Repositories/Index");
+                return RedirectToPage("/Designer/Index");
             }
 
             var now = DateTime.UtcNow;
@@ -107,7 +107,7 @@ namespace FirstApp.Pages.ObjectTypes
             // If ObjectType was created from a Repository, redirect back to that Repository's details
             if (ObjectType.RepositoryId > 0)
             {
-                return RedirectToPage("/Repositories/Details", new { id = ObjectType.RepositoryId });
+                return RedirectToPage("/Designer/Details", new { id = ObjectType.RepositoryId });
             }
 
             return RedirectToPage("./Index");

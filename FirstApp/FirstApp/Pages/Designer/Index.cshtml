@@ -1,8 +1,8 @@
 @page
-@model FirstApp.Pages.Repositories.IndexModel
+@model FirstApp.Pages.Designer.IndexModel
 
 @{
-    ViewData["Title"] = "Repositories";
+    ViewData["Title"] = "Designer";
 }
 
 <nav aria-label="breadcrumb">
@@ -10,6 +10,11 @@
         <li class="breadcrumb-item">
             <a asp-page="/Index">
                 <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Index">
+                <i class="fa-solid fa-list"></i> Designer
             </a>
         </li>
     </ol>

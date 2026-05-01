@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using FirstApp.Data;
 using FirstApp.Models;
 
-namespace FirstApp.Pages.Repositories
+namespace FirstApp.Pages.Designer
 {
     public class IndexModel : PageModel
     {

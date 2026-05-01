@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using FirstApp.Data;
 using FirstApp.Models;
 
-namespace FirstApp.Pages.Repositories
+namespace FirstApp.Pages.Designer
 {
     public class CreateModel : PageModel
     {

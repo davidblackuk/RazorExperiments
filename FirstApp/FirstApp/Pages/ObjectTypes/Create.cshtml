@@ -13,12 +13,12 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Repositories/Index">
-                <i class="fa-solid fa-list"></i> Repositories
+            <a asp-page="/Designer/Index">
+                <i class="fa-solid fa-list"></i> Designer
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a href="#" id="backToRepository" data-url="@Url.Page("/Repositories/Details", new { id = Model.ObjectType.RepositoryId })">
+            <a href="#" id="backToRepository" data-url="@Url.Page("/Designer/Details", new { id = Model.ObjectType.RepositoryId })">
                 <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository.Name
             </a>
         </li>
@@ -51,7 +51,7 @@
     </div>
     <div class="card-footer text-center">
         <button type="submit" form="objectTypeForm" class="btn btn-primary btn-sm">Create</button>
-        <a asp-page="/Repositories/Details" asp-route-id="@Model.ObjectType.RepositoryId" class="btn btn-secondary btn-sm">Cancel</a>
+        <a asp-page="/Designer/Details" asp-route-id="@Model.ObjectType.RepositoryId" class="btn btn-secondary btn-sm">Cancel</a>
     </div>
 </div>
 

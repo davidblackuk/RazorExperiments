@@ -1,8 +1,8 @@
 @page
-@model FirstApp.Pages.Repositories.EditModel
+@model FirstApp.Pages.Designer.CreateModel
 
 @{
-    ViewData["Title"] = "Edit Repository";
+    ViewData["Title"] = "Create Designer";
 }
 
 <nav aria-label="breadcrumb">
@@ -13,8 +13,8 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Repositories/Index">
-                <i class="fa-solid fa-list"></i> Repositories
+            <a asp-page="/Designer/Index">
+                <i class="fa-solid fa-list"></i> Designer
             </a>
         </li>
     </ol>
@@ -22,12 +22,11 @@
 
 <div class="card shadow">
     <div class="card-header">
-        <h4 class="mb-0">Edit Repository</h4>
+        <h4 class="mb-0">Create Designer</h4>
     </div>
     <div class="card-body">
         <form method="post" id="repositoryForm">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Repository.Id" />
             <input type="hidden" asp-for="Repository.CreatedById" />
             <input type="hidden" asp-for="Repository.CreatedAt" />
             <input type="hidden" asp-for="Repository.UpdatedById" />
@@ -45,12 +44,12 @@
         </form>
     </div>
     <div class="card-footer text-center">
-        <button type="submit" form="repositoryForm" class="btn btn-primary btn-sm">Save</button>
-        <a asp-page="./Index" class="btn btn-secondary btn-sm">Cancel</a>
+        <button type="submit" form="repositoryForm" class="btn btn-primary btn-sm">Create</button>
+        <a asp-page="./Details" asp-route-id="@Model.Repository.Id" class="btn btn-secondary btn-sm">Cancel</a>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-
+    

@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using FirstApp.Data;
 using FirstApp.Models;
 
-namespace FirstApp.Pages.Repositories
+namespace FirstApp.Pages.Designer
 {
     public class EditModel : PageModel
     {
@@ -76,7 +76,7 @@ namespace FirstApp.Pages.Repositories
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("./Index");
+            return RedirectToPage("./Details", new { id= Repository.Id  });
         }
 
         private bool RepositoryExists(int id)

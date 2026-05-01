@@ -4,17 +4,18 @@ using Microsoft.EntityFrameworkCore;
 using FirstApp.Data;
 using FirstApp.Models;
 
-namespace FirstApp.Pages.Repositories
+namespace FirstApp.Pages.Designer
 {
-    public class DetailsModel : PageModel
+    public class DeleteModel : PageModel
     {
         private readonly ApplicationDbContext _context;
 
-        public DetailsModel(ApplicationDbContext context)
+        public DeleteModel(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        [BindProperty]
         public Repository Repository { get; set; } = default!;
 
         public async Task<IActionResult> OnGetAsync(int? id)
@@ -25,7 +26,6 @@ namespace FirstApp.Pages.Repositories
             }
 
             var repository = await _context.Repositories
-                .Include(r => r.ObjectTypes)
                 .Include(r => r.CreatedBy)
                 .Include(r => r.UpdatedBy)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -37,6 +37,25 @@ namespace FirstApp.Pages.Repositories
 
             Repository = repository;
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var repository = await _context.Repositories.FindAsync(id);
+            
+            if (repository != null)
+            {
+                Repository = repository;
+                _context.Repositories.Remove(Repository);
+                await _context.SaveChangesAsync();
+            }
+
+            return RedirectToPage("./Index");
         }
     }
 }

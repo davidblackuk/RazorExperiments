@@ -56,7 +56,7 @@ namespace FirstApp.Pages.ObjectTypes
                 ObjectType = objectType;
                 _context.ObjectTypes.Remove(ObjectType);
                 await _context.SaveChangesAsync();
-                return RedirectToPage("/Repositories/Details", new { id = repositoryId });
+                return RedirectToPage("/Designer/Details", new { id = repositoryId });
             }
 
             return RedirectToPage("./Index");

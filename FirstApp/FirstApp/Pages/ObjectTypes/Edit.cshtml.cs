@@ -79,7 +79,7 @@ namespace FirstApp.Pages.ObjectTypes
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/Repositories/Details", new { id = ObjectType.RepositoryId });
+            return RedirectToPage("/Designer/Details", new { id = ObjectType.RepositoryId });
         }
 
         private bool ObjectTypeExists(int id)
