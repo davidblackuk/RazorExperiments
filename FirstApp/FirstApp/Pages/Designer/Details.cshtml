@@ -17,6 +17,13 @@
                 <i class="fa-solid fa-list"></i> Designer
             </a>
         </li>
+
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Details", new id=" = Model.Repository.Id">
+                <i class="fa-solid fa-database"></i> @Model.Repository.Name
+            </a>
+        </li>
+
     </ol>
 </nav>
 
