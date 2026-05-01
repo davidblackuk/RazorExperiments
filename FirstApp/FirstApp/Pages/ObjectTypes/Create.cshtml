@@ -8,7 +8,7 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
-            <a asp-page="/Index">
+            <a asp-page="/Index" , new id=" = Model.Repository.Id">
                 <i class="fa-solid fa-home"></i> Home
             </a>
         </li>
@@ -17,11 +17,14 @@
                 <i class="fa-solid fa-list"></i> Designer
             </a>
         </li>
+     
         <li class="breadcrumb-item">
-            <a href="#" id="backToRepository" data-url="@Url.Page("/Designer/Details", new { id = Model.ObjectType.RepositoryId })">
-                <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository.Name
+            <a asp-page="/Designer/Details" asp-route-id="@Model.ObjectType.Repository!.Id">
+                <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository!.Name
             </a>
         </li>
+
+     
     </ol>
 </nav>
 

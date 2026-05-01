@@ -18,15 +18,11 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Repositories/Details" asp-route-id="@Model.PropertyType.ObjectType.RepositoryId">
-                <i class="fa-solid fa-database"></i> @Model.PropertyType.ObjectType.Repository.Name
+            <a asp-page="/Repositories/Details" asp-route-id="@Model.PropertyType.ObjectType!.RepositoryId">
+                <i class="fa-solid fa-database"></i> @Model.PropertyType.ObjectType!.Repository!.Name
             </a>
         </li>
-        <li class="breadcrumb-item">
-            <a asp-page="/ObjectTypes/Details" asp-route-id="@Model.PropertyType.ObjectTypeId">
-                <i class="fa-solid fa-cube"></i> @Model.PropertyType.ObjectType.Name
-            </a>
-        </li>
+
     </ol>
 </nav>
 

@@ -8,18 +8,25 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
-            <a asp-page="/Index">
+            <a asp-page="/Index" , new id=" = Model.Repository.Id">
                 <i class="fa-solid fa-home"></i> Home
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Repositories/Index">
-                <i class="fa-solid fa-list"></i> Repositories
+            <a asp-page="/Designer">
+                <i class="fa-solid fa-list"></i> Designer
             </a>
         </li>
+     
         <li class="breadcrumb-item">
-            <a href="#" id="backToRepository" data-url="@Url.Page("/Repositories/Details", new { id = Model.ObjectType.RepositoryId })">
-                <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository.Name
+            <a asp-page="/Designer/Details" asp-route-id="@Model.ObjectType.Repository!.Id">
+                <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository!.Name
+            </a>
+        </li>
+
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Details" , new id=" = Model.Repository.Id">
+                <i class="fa-solid fa-cube"></i> @Model.ObjectType.Name
             </a>
         </li>
     </ol>
@@ -52,51 +59,13 @@
     </div>
     <div class="card-footer text-center">
         <button type="submit" form="objectTypeForm" class="btn btn-primary btn-sm">Save</button>
-        <a href="#" id="cancelButton" data-url="@Url.Page("/Designer/Details", new { id = Model.ObjectType.RepositoryId })" class="btn btn-secondary btn-sm">Cancel</a>
+        <a asp-page="/Designer/Details" asp-route-id="@Model.ObjectType.Repository.Id" class="btn btn-secondary btn-sm">Cancel</a>
     </div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        let formModified = false;
-        const form = document.getElementById('objectTypeForm');
-
-        // Track form changes
-        form.addEventListener('input', function() {
-            formModified = true;
-        });
-
-        // Reset flag on form submit
-        form.addEventListener('submit', function() {
-            formModified = false;
-        });
-
-        // Warn before navigating away if form is modified
-        document.getElementById('backToRepository').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (formModified && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
-                return;
-            }
-            window.location.href = this.getAttribute('data-url');
-        });
-
-        document.getElementById('cancelButton').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (formModified && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
-                return;
-            }
-            window.location.href = this.getAttribute('data-url');
-        });
-
-        // Warn on browser back/refresh
-        window.addEventListener('beforeunload', function(e) {
-            if (formModified) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
-    </script>
+   
 }
 
 
