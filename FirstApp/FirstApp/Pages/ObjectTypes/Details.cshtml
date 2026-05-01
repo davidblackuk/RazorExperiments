@@ -98,12 +98,27 @@
                     @foreach (var propertyType in Model.ObjectType.PropertyTypes)
                     {
                         <tr>
-                            <td>@propertyType.Name</td>
+                            <td>
+                                @if (propertyType.IsSystemProperty)
+                                {
+                                    <i class="fa-solid fa-table-cells-row-lock  me-2" title="System Property"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-solid fa-table-list  me-2" title="System Property"></i>                                    
+                                }
+                                @propertyType.Name
+                            </td>
                             <td>@propertyType.Description</td>
                             <td>
-                                <a asp-page="/PropertyTypes/Details" asp-route-id="@propertyType.Id">Details</a> |
-                                <a asp-page="/PropertyTypes/Edit" asp-route-id="@propertyType.Id">Edit</a> |
-                                <a asp-page="/PropertyTypes/Delete" asp-route-id="@propertyType.Id">Delete</a>
+                                <a asp-page="/PropertyTypes/Details" asp-route-id="@propertyType.Id">Details</a> 
+                                @if (!propertyType.IsSystemProperty)
+                                {
+                                    <text>|</text> 
+                                    <a asp-page="/PropertyTypes/Edit" asp-route-id="@propertyType.Id">Edit</a>
+                                    <text>|</text>
+                                    <a asp-page="/PropertyTypes/Delete" asp-route-id="@propertyType.Id">Delete</a>
+                                }
                             </td>
                         </tr>
                     }
