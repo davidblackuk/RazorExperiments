@@ -13,7 +13,7 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Designer">
+            <a asp-page="/Designer/Index">
                 <i class="fa-solid fa-list"></i> Designer
             </a>
         </li>
@@ -33,7 +33,7 @@
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Object Type: @Model.ObjectType.Name</h4>
-            <a asp-page="./Edit" asp-route-id="@Model.ObjectType.Id" class="btn btn-primary btn-sm">Edit</a>
+           
         </div>
     </div>
     <div class="card-body">

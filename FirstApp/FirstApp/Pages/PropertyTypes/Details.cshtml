@@ -13,17 +13,17 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Repositories/Index">
+            <a asp-page="/Designer/Index">
                 <i class="fa-solid fa-list"></i> Repositories
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Repositories/Details" asp-route-id="@Model.PropertyType.ObjectType.RepositoryId">
-                <i class="fa-solid fa-database"></i> @Model.PropertyType.ObjectType.Repository.Name
+            <a asp-page="/Designer/Details" asp-route-id="@Model.PropertyType.ObjectType!.Repository!.Id">
+                <i class="fa-solid fa-database"></i> @Model.PropertyType.ObjectType!.Repository!.Name
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/ObjectTypes/Details" asp-route-id="@Model.PropertyType.ObjectTypeId">
+            <a id="backToRepository" asp-page="/ObjectTypes/Details" , asp-route-id="@Model.PropertyType.ObjectType.Id" )">
                 <i class="fa-solid fa-cube"></i> @Model.PropertyType.ObjectType.Name
             </a>
         </li>
@@ -34,7 +34,7 @@
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
             <h4 class="mb-0">Property Type: @Model.PropertyType.Name</h4>
-            <a asp-page="./Edit" asp-route-id="@Model.PropertyType.Id" class="btn btn-primary btn-sm">Edit</a>
+       
         </div>
     </div>
     <div class="card-body">

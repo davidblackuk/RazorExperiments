@@ -13,13 +13,18 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Repositories/Index">
+            <a asp-page="/Designer/Index">
                 <i class="fa-solid fa-list"></i> Repositories
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Repositories/Details" asp-route-id="@Model.PropertyType.ObjectType!.RepositoryId">
+            <a asp-page="/Designer/Details" asp-route-id="@Model.PropertyType.ObjectType!.Repository!.Id">
                 <i class="fa-solid fa-database"></i> @Model.PropertyType.ObjectType!.Repository!.Name
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a id="backToRepository" asp-page="/ObjectTypes/Details" , asp-route-id="@Model.PropertyType.ObjectType.Id" )">
+                <i class="fa-solid fa-cube"></i> @Model.PropertyType.ObjectType.Name
             </a>
         </li>
 

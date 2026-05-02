@@ -13,7 +13,7 @@
             </a>
         </li>
         <li class="breadcrumb-item">
-            <a asp-page="/Designer">
+            <a asp-page="/Designer/Index">
                 <i class="fa-solid fa-list"></i> Designer
             </a>
         </li>
@@ -24,11 +24,7 @@
             </a>
         </li>
 
-        <li class="breadcrumb-item">
-            <a asp-page="/Designer/Details" , new id=" = Model.Repository.Id">
-                <i class="fa-solid fa-cube"></i> @Model.ObjectType.Name
-            </a>
-        </li>
+       
     </ol>
 </nav>
 
@@ -59,7 +55,7 @@
     </div>
     <div class="card-footer text-center">
         <button type="submit" form="objectTypeForm" class="btn btn-primary btn-sm">Save</button>
-        <a asp-page="/Designer/Details" asp-route-id="@Model.ObjectType.Repository.Id" class="btn btn-secondary btn-sm">Cancel</a>
+        <a asp-page="/ObjectTypes/Details" asp-route-id="@Model.ObjectType.Id" class="btn btn-secondary btn-sm">Cancel</a>
     </div>
 </div>
 

@@ -94,36 +94,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    <script>
-        let formModified = false;
-        const form = document.getElementById('objectTypeForm');
-
-        // Track form changes
-        form.addEventListener('input', function() {
-            formModified = true;
-        });
-
-        // Reset flag on form submit
-        form.addEventListener('submit', function() {
-            formModified = false;
-        });
-
-        // Warn before navigating away if form is modified
-        document.getElementById('backToRepository').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (formModified && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
-                return;
-            }
-            window.location.href = this.getAttribute('data-url');
-        });
-
-        // Warn on browser back/refresh
-        window.addEventListener('beforeunload', function(e) {
-            if (formModified) {
-                e.preventDefault();
-                e.returnValue = '';
-            }
-        });
-    </script>
 }
 
