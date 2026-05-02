@@ -9,6 +9,12 @@ body {
     background: linear-gradient(135deg, var(--sapphire-sky) 0%, var(--glaucous) 100%);
     min-height: 100vh;
 }
+
+.card-header {
+    background-color: var(--pale-sky);
+ 
+}
+
 html {
     font-size: 14px;
 }

@@ -32,7 +32,7 @@
 <div class="card shadow">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Object Type: @Model.ObjectType.Name</h4>
+            <h4 class="mb-0"><i class="fa-solid fa-cube me-1"></i> Object Type: @Model.ObjectType.Name</h4>
            
         </div>
     </div>
@@ -81,7 +81,7 @@
 <div class="mt-4 card shadow">
     <div class="card-header">
         <div class="d-flex justify-content-between">
-            <h4 class="mb-0">Property Types</h4>
+            <h4 class="mb-0"><i class="fa-solid fa-diagram-project me-1"></i>  Property Types</h4>
             <a asp-page="/PropertyTypes/Create" asp-route-objectTypeId="@Model.ObjectType.Id" class="btn btn-primary btn-sm">
                 <i class="fa-solid fa-plus"></i> New Property Type
             </a>

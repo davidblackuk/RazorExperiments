@@ -26,7 +26,7 @@
 <div class="card shadow">
     <div class="card-header">
         <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">Repository: @Model.Repository.Name</h4>
+            <h4 class="mb-0"><i class="fa-solid fa-list me-1"></i> Repository: @Model.Repository.Name</h4>
            
         </div>
     </div>
@@ -75,7 +75,7 @@
 <div class="mt-4 card shadow">
     <div class="card-header">
         <div class="d-flex justify-content-between">
-            <h4 class="mb-0">Object Types</h4>
+            <h4 class="mb-0"><i class="fa-solid fa-cube me-1"></i> Object Types</h4>
             <a asp-page="/ObjectTypes/Create" asp-route-repositoryId="@Model.Repository.Id" class="btn btn-primary btn-sm">
                 <i class="fa-solid fa-plus"></i> New Object Type
             </a>
