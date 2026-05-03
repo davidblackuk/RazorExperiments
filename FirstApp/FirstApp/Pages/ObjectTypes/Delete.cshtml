@@ -28,17 +28,10 @@
 
 <div class="card shadow">
     <div class="card-header">
-        <h4 class="mb-0">Delete: @Model.ObjectType.Name</h4>
+        <h4 class="mb-0"><i class="fa-solid fa-cube me-1"></i> Delete: @Model.ObjectType.Name</h4>
     </div>
     <div class="card-body">
-        <h5>Are you sure you want to delete this?</h5>
-
-        @if (Model.ObjectType.PropertyTypes != null && Model.ObjectType.PropertyTypes.Any())
-        {
-            <div class="alert alert-warning" role="alert">
-                <strong>Warning:</strong> Deleting this object type will also delete @Model.ObjectType.PropertyTypes.Count associated property type(s).
-            </div>
-        }
+        <h5>Are you sure you want to delete the object type <strong>@Model.ObjectType.Name</strong>?</h5>
 
         <dl class="row">
             <dt class="col-sm-2">
@@ -67,17 +60,26 @@
             </dd>
             @if (Model.ObjectType.PropertyTypes != null && Model.ObjectType.PropertyTypes.Any())
             {
-                <dt class="col-sm-2">
-                    Property Types
-                </dt>
-                <dd class="col-sm-10">
-                    <ul class="list-unstyled mb-0">
+                bool first = true;
+                <div class="alert alert-danger mt-3">
+                    <p class="">
+                        Deleting this object type will delete all property types and instances of it. There
+                        is no undo operation for this action.
+                    </p>
+                    <p>
+                        Property Types:
                         @foreach (var propertyType in Model.ObjectType.PropertyTypes)
                         {
-                            <li>@propertyType.Name</li>
+                            if (!first)
+                            {
+                                <text>, </text>
+                            }
+                            @propertyType.Name
+
+                            first = false;
                         }
-                    </ul>
-                </dd>
+                    </p>
+                </div>
             }
         </dl>
     </div>

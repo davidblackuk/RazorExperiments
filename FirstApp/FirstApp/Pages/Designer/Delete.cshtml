@@ -22,10 +22,10 @@
 
 <div class="card shadow">
     <div class="card-header">
-        <h4 class="mb-0">Delete: @Model.Repository.Name</h4>
+        <h4 class="mb-0"><i class="fa-solid fa-list me-1"></i> Delete @Model.Repository.Name</h4>
     </div>
     <div class="card-body">
-        <h5>Are you sure you want to delete this?</h5>
+        <h5>Are you sure you want to delete the repository <strong>@Model.Repository.Name?</strong></h5>
         <dl class="row">
             <dt class="col-sm-2">
                 @Html.DisplayNameFor(model => model.Repository.Name)
@@ -52,6 +52,12 @@
                 @Html.DisplayFor(model => model.Repository.CreatedAt)
             </dd>
         </dl>
+
+        <div class="alert alert-danger text-center">
+            Deleting this repository will delete all object types, property types and instances contained in it. There
+            is no undo operation for this action.
+        </div>
+
     </div>
     <div class="card-footer text-center">
         <form method="post" class="d-inline">
