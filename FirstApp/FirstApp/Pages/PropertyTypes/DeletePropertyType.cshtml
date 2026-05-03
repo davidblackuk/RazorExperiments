@@ -85,7 +85,7 @@
         <form method="post" class="d-inline">
             <input type="hidden" asp-for="PropertyType.Id" />
             <input type="submit" value="Delete" class="btn btn-danger btn-sm" />
-            <a asp-page="/ObjectTypes/Details" asp-route-id="@Model.PropertyType.ObjectTypeId" class="btn btn-secondary btn-sm">Cancel</a>
+            <a asp-page="/ObjectTypes/ObjectTypeDetails" asp-route-id="@Model.PropertyType.ObjectTypeId" class="btn btn-secondary btn-sm">Cancel</a>
         </form>
     </div>
 </div>

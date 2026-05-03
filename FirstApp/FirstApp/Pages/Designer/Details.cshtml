@@ -76,7 +76,7 @@
     <div class="card-header">
         <div class="d-flex justify-content-between">
             <h4 class="mb-0"><i class="fa-solid fa-cube me-1"></i> Object Types</h4>
-            <a asp-page="/ObjectTypes/Create" asp-route-repositoryId="@Model.Repository.Id" class="btn btn-primary btn-sm">
+            <a asp-page="/ObjectTypes/CreateObjectType" asp-route-repositoryId="@Model.Repository.Id" class="btn btn-primary btn-sm">
                 <i class="fa-solid fa-plus"></i> New Object Type
             </a>
         </div>
@@ -99,9 +99,9 @@
                             <td>@objectType.Name</td>
                             <td>@objectType.Description</td>
                             <td>
-                                <a asp-page="/ObjectTypes/Details" asp-route-id="@objectType.Id">Details</a> |
-                                <a asp-page="/ObjectTypes/Edit" asp-route-id="@objectType.Id">Edit</a> |
-                                <a asp-page="/ObjectTypes/Delete" asp-route-id="@objectType.Id">Delete</a>
+                                <a asp-page="/ObjectTypes/ObjectTypeDetails" asp-route-id="@objectType.Id">Details</a> |
+                                <a asp-page="/ObjectTypes/EditObjectType" asp-route-id="@objectType.Id">Edit</a> |
+                                <a asp-page="/ObjectTypes/DeleteObjectType" asp-route-id="@objectType.Id">Delete</a>
                             </td>
                         </tr>
                     }

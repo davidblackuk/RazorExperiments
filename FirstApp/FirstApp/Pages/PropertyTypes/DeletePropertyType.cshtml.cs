@@ -56,7 +56,7 @@ namespace FirstApp.Pages.PropertyTypes
                 PropertyType = propertyType;
                 _context.PropertyTypes.Remove(PropertyType);
                 await _context.SaveChangesAsync();
-                return RedirectToPage("/ObjectTypes/Details", new { id = objectTypeId });
+                return RedirectToPage("/ObjectTypes/ObjectTypeDetails", new { id = objectTypeId });
             }
 
             return RedirectToPage("./Index");

@@ -62,7 +62,11 @@
     </div>
     <div class="card-footer text-center">
         <button type="submit" form="propertyTypeForm" class="btn btn-primary btn-sm">Create</button>
-        <a href="#" id="cancelButton" data-url="@Url.Page("/ObjectTypes/Details", new { id = Model.PropertyType.ObjectTypeId })" class="btn btn-secondary btn-sm">Cancel</a>
+   
+        <a asp-page="/ObjectTypes/ObjectTypeDetails" asp-route-id="@Model.PropertyType.ObjectTypeId" class="btn btn-secondary btn-sm">Cancel</a>
+
+   
+
     </div>
 </div>
 

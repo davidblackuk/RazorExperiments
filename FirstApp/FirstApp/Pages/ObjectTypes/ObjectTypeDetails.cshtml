@@ -82,7 +82,7 @@
     <div class="card-header">
         <div class="d-flex justify-content-between">
             <h4 class="mb-0"><i class="fa-solid fa-diagram-project me-1"></i>  Property Types</h4>
-            <a asp-page="/PropertyTypes/Create" asp-route-objectTypeId="@Model.ObjectType.Id" class="btn btn-primary btn-sm">
+            <a asp-page="/PropertyTypes/CreatePropertyType" asp-route-objectTypeId="@Model.ObjectType.Id" class="btn btn-primary btn-sm">
                 <i class="fa-solid fa-plus"></i> New Property Type
             </a>
         </div>
@@ -115,13 +115,13 @@
                             </td>
                             <td>@propertyType.Description</td>
                             <td>
-                                <a asp-page="/PropertyTypes/Details" asp-route-id="@propertyType.Id">Details</a> 
+                                <a asp-page="/PropertyTypes/PropertyTypeDetails" asp-route-id="@propertyType.Id">Details</a> 
                                 @if (!propertyType.IsSystemProperty)
                                 {
                                     <text>|</text> 
-                                    <a asp-page="/PropertyTypes/Edit" asp-route-id="@propertyType.Id">Edit</a>
+                                    <a asp-page="/PropertyTypes/EditPropertyType" asp-route-id="@propertyType.Id">Edit</a>
                                     <text>|</text>
-                                    <a asp-page="/PropertyTypes/Delete" asp-route-id="@propertyType.Id">Delete</a>
+                                    <a asp-page="/PropertyTypes/DeletePropertyType" asp-route-id="@propertyType.Id">Delete</a>
                                 }
                             </td>
                         </tr>

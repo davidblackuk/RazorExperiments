@@ -94,7 +94,7 @@ namespace FirstApp.Pages.PropertyTypes
             // If PropertyType was created from an ObjectType, redirect back to that ObjectType's details
             if (PropertyType.ObjectTypeId > 0)
             {
-                return RedirectToPage("/ObjectTypes/Details", new { id = PropertyType.ObjectTypeId });
+                return RedirectToPage("/ObjectTypes/ObjectTypeDetails", new { id = PropertyType.ObjectTypeId });
             }
 
             return RedirectToPage("./Index");

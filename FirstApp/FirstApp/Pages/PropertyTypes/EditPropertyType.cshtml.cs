@@ -81,7 +81,7 @@ namespace FirstApp.Pages.PropertyTypes
 
             await _context.SaveChangesAsync();
 
-            return RedirectToPage("/ObjectTypes/Details", new { id = PropertyType.ObjectTypeId });
+            return RedirectToPage("/ObjectTypes/ObjectTypeDetails", new { id = PropertyType.ObjectTypeId });
         }
 
         private bool PropertyTypeExists(int id)
