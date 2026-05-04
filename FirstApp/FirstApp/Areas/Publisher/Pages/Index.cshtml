@@ -1,0 +1,27 @@
+@page
+@model FirstApp.Areas.Publisher.Pages.IndexModel
+
+@{
+    ViewData["Title"] = "Publisher";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-page="/Index">
+                <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <h4 class="mb-0">Publisher</h4>
+        </div>
+    </div>
+    <div class="card-body">
+        <p>Publish your data models and make them available for use.</p>
+    </div>
+</div>
