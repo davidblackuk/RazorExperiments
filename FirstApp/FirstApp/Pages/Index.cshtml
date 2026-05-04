@@ -4,29 +4,58 @@
     ViewData["Title"] = "Home";
 }
 
-<h1 class="text-white-50 mt-3 text-center">Welcome to Wyrm</h1>
+<h1 class="text-white-50 mt-4 text-center">Wyrm model management</h1>
 
 <div id="home-page-content" class="container">
     <div class="row">
-        <a class="nav-link mt-5 col-6 col-sm-12" asp-area="" asp-page="/Designer/Index">
-            <div class="card glass text-center">
+        <a class="nav-link mt-4 col-12 col-md-6" asp-area="" asp-page="/Designer/Index">
+            <div class="card glass text-center h-100 m-2">
                 <div class="button-content">
                     <i class="fa-solid fa-list me-1"></i> Designer
                 </div>
-                <p class="button-description text-white-50">Design your repository, create models, object types, property types and association types.</p>
+                <p class="button-description text-white-50">
+                    Design your repository, create models, object types, property types and association types.
+                </p>
+            </div>
+        </a>
+        
+        <a class="nav-link mt-4 col-12 col-md-6" asp-area="" asp-page="/Explorer/Index">
+            <div class="card glass text-center h-100 m-2">
+                <div class="button-content">
+                    <i class="fa-solid fa-compass me-1"></i> Explorer
+                </div>
+                <p class="button-description text-white-50">
+                    Explore your repositories, create objects and associate them to others.
+                </p>
             </div>
         </a>
 
-        <a class="nav-link mt-5 col-6  col-sm-12" asp-area="" asp-page="/Explorer/Index">
-            <div class="card glass text-center">
+        
+        <a class="nav-link mt-4 col-12 col-md-6" asp-area="" asp-page="/Explorer/Index">
+            <div class="card glass text-center h-100 m-2">
                 <div class="button-content">
-                    <i class="fa-solid fa-list me-1"></i> Explorer
+                    <i class=" fa-solid fa-pen-to-square"></i> Publisher
                 </div>
-                <p class="button-description text-white-50">Explore your repositories, create objects and associate them to others.</p>
+                <p class="button-description text-white-50">
+                    Design layouts, template content and make it ready for consumption.
+                </p>
             </div>
         </a>
+
+        
+        <a class="nav-link mt-4 col-12 col-md-6" asp-area="" asp-page="/Explorer/Index">
+            <div class="card glass text-center h-100 m-2">
+                <div class="button-content">
+                    <i class="fa-solid fa-book-open me-1"></i> Reader
+                </div>
+                <p class="button-description text-white-50">
+                    Consume content, access published views of data.
+                </p>
+            </div>
+        </a>
+
+
 
     </div>
-
 
 </div>

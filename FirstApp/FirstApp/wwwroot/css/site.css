@@ -11,8 +11,9 @@ body {
 }
 
 .card-header {
-    background-color: var(--pale-sky);
- 
+    color: white;
+    background-color: var(--glaucous);
+    /*background: linear-gradient(135deg, var(--glaucous) 0%, var(--baby-blue-ice) 100%);*/
 }
 
 html {
