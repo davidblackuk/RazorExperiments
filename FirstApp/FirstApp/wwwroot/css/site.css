@@ -83,3 +83,25 @@ body {
 .breadcrumb-item + .breadcrumb-item::before {
     color: white;
 }
+
+
+
+#home-page-content div, i{
+    color: white;
+}
+
+#home-page-content .button-content {
+    font-size: xx-large;
+}
+
+#home-page-content .button-description {
+    font-size: small;
+
+    margin: 0.5rem;
+    border-top: 1px solid;
+    padding-top: 0.5rem;
+}
+
+#home-page-content .card:hover {
+    border-color: var(--pale-sky);
+}

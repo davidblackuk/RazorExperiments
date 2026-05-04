@@ -1,10 +1,32 @@
 ﻿@page
 @model IndexModel
 @{
-    ViewData["Title"] = "Home page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<h1 class="text-white-50 mt-3 text-center">Welcome to Wyrm</h1>
+
+<div id="home-page-content" class="container">
+    <div class="row">
+        <a class="nav-link mt-5 col-6 col-sm-12" asp-area="" asp-page="/Designer/Index">
+            <div class="card glass text-center">
+                <div class="button-content">
+                    <i class="fa-solid fa-list me-1"></i> Designer
+                </div>
+                <p class="button-description text-white-50">Design your repository, create models, object types, property types and association types.</p>
+            </div>
+        </a>
+
+        <a class="nav-link mt-5 col-6  col-sm-12" asp-area="" asp-page="/Explorer/Index">
+            <div class="card glass text-center">
+                <div class="button-content">
+                    <i class="fa-solid fa-list me-1"></i> Explorer
+                </div>
+                <p class="button-description text-white-50">Explore your repositories, create objects and associate them to others.</p>
+            </div>
+        </a>
+
+    </div>
+
+
 </div>
