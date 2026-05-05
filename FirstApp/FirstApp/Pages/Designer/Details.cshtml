@@ -84,33 +84,37 @@
     <div class="card-body">
         @if (Model.Repository.ObjectTypes.Any())
         {
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var objectType in Model.Repository.ObjectTypes)
-                    {
-                        <tr>
-                            <td>@objectType.Name</td>
-                            <td>@objectType.Description</td>
-                            <td>
-                                <a asp-page="/ObjectTypes/ObjectTypeDetails" asp-route-id="@objectType.Id">Details</a> |
-                                <a asp-page="/ObjectTypes/EditObjectType" asp-route-id="@objectType.Id">Edit</a> |
-                                <a asp-page="/ObjectTypes/DeleteObjectType" asp-route-id="@objectType.Id">Delete</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+            <div class="list-group">
+                @foreach (var objectType in Model.Repository.ObjectTypes)
+                {
+                    <div class="list-group-item list-group-item-action">
+                        <div class="row align-items-center">
+                            <div class="col" style="cursor: pointer;" onclick="window.location.href='@Url.Page("/ObjectTypes/ObjectTypeDetails", new { id = objectType.Id })'">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="mb-1">@objectType.Name</h5>
+                                    <div class="d-flex align-items-center">
+                                        <a asp-page="/ObjectTypes/EditObjectType" asp-route-id="@objectType.Id" class="mx-1">
+                                            Edit
+                                        </a>
+                                        |
+                                        <a asp-page="/ObjectTypes/DeleteObjectType" asp-route-id="@objectType.Id" class="mx-1">
+                                            Delete
+                                        </a>
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(objectType.Description))
+                                {
+                                    <p class="mb-1 text-muted">@objectType.Description</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
         }
         else
         {
-            <p>No object types found.</p>
+            <p class="text-muted">No object types found.</p>
         }
     </div>
 </div>
