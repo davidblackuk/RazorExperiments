@@ -30,38 +30,41 @@
         </div>
     </div>
     <div class="card-body">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Repositories[0].Name)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Repositories[0].Description)
-                    </th>
-                    <th>
-
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
+        @if (Model.Repositories.Any())
+        {
+            <div class="list-group">
                 @foreach (var item in Model.Repositories)
                 {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Name)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Description)
-                        </td>
-                        <td>
-                            <a asp-page="./Edit" asp-route-id="@item.Id">Edit</a> |
-                            <a asp-page="./Details" asp-route-id="@item.Id">Details</a> |
-                            <a asp-page="./Delete" asp-route-id="@item.Id">Delete</a>
-                        </td>
-                    </tr>
+                    <div class="list-group-item list-group-item-action">
+                        <div class="row align-items-center">
+                            <div class="col" style="cursor: pointer;" onclick="window.location.href='@Url.Page("./Details", new { id = item.Id })'">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="mb-1">@item.Name</h5>
+                                    <div class="d-flex align-items-center">
+                                       
+                                        <a asp-page="./Edit" asp-route-id="@item.Id" class="mx-1">
+                                            Edit
+                                        </a>
+                                        |
+                                        <a asp-page="./Delete" asp-route-id="@item.Id" class="mx-1">
+                                            Delete
+                                        </a>
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <p class="mb-1 text-muted">@item.Description</p>
+                                }
+                            </div>
+                                
+                        </div>
+                    </div>
                 }
-            </tbody>
-        </table>
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">No repositories found. Create one to get started.</p>
+        }
     </div>
 </div>
