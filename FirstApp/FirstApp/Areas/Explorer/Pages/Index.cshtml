@@ -8,8 +8,13 @@
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">
-            <a asp-page="/Index">
+            <a asp-area="" asp-page="/Index">
                 <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <a asp-area="Explorer" asp-page="/Index">
+                <i class="fa-solid fa-compass"></i> Explorer
             </a>
         </li>
     </ol>
