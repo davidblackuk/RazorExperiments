@@ -22,11 +22,30 @@
 
 <div class="card shadow">
     <div class="card-header">
-        <div class="d-flex justify-content-between">
-            <h4 class="mb-0">Explorer</h4>
-        </div>
+        <h4 class="mb-0"><i class="fa-solid fa-compass me-1"></i> Repositories</h4>
     </div>
     <div class="card-body">
-        <p>Explore your repositories, create objects and associate them to others.</p>
+        @if (Model.Repositories.Any())
+        {
+            <div class="list-group">
+                @foreach (var repository in Model.Repositories)
+                {
+                    <a asp-page="./ObjectTypes" asp-route-repositoryId="@repository.Id" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">@repository.Name</h5>
+                            <small>@repository.ObjectTypes.Count object types</small>
+                        </div>
+                        @if (!string.IsNullOrEmpty(repository.Description))
+                        {
+                            <p class="mb-1">@repository.Description</p>
+                        }
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">No repositories found. Create one in the Designer first.</p>
+        }
     </div>
 </div>

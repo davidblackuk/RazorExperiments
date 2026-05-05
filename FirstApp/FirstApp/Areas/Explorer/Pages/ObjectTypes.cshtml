@@ -1,0 +1,59 @@
+@page
+@model FirstApp.Areas.Explorer.Pages.ObjectTypesModel
+
+@{
+    ViewData["Title"] = "Object Types";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-area="" asp-page="/Index">
+                <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-area="Explorer" asp-page="/Index">
+                <i class="fa-solid fa-compass"></i> Explorer
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <i class="fa-solid fa-database"></i> @Model.Repository.Name
+        </li>
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="fa-solid fa-database me-1"></i> @Model.Repository.Name - Object Types</h4>
+    </div>
+    <div class="card-body">
+        @if (!string.IsNullOrEmpty(Model.Repository.Description))
+        {
+            <p class="text-muted mb-3">@Model.Repository.Description</p>
+        }
+
+        @if (Model.Repository.ObjectTypes.Any())
+        {
+            <div class="list-group">
+                @foreach (var objectType in Model.Repository.ObjectTypes)
+                {
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">@objectType.Name</h5>
+                            <small>@objectType.PropertyTypes.Count properties</small>
+                        </div>
+                        @if (!string.IsNullOrEmpty(objectType.Description))
+                        {
+                            <p class="mb-1">@objectType.Description</p>
+                        }
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">No object types found in this repository.</p>
+        }
+    </div>
+</div>
