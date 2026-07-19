@@ -2,11 +2,11 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/FirstApp/FirstApp/bin/Debug/net10.0
-/FirstApp/FirstApp/obj/Debug/net10.0
-/FirstApp/FirstApp/obj
+/Wyrm/Wyrm/bin/Debug/net10.0
+/Wyrm/Wyrm/obj/Debug/net10.0
+/Wyrm/Wyrm/obj
 /.vs
-/FirstApp/.vs
-/FirstApp/FirstApp/*.db
-/FirstApp/FirstApp/*.db-shm
-/FirstApp/FirstApp/*.db-wal
+/Wyrm/.vs
+/Wyrm/Wyrm/*.db
+/Wyrm/Wyrm/*.db-shm
+/Wyrm/Wyrm/*.db-wal

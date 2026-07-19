@@ -1,0 +1,92 @@
+@page
+@model Wyrm.Pages.PropertyTypes.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-page="/Index">
+                <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Index">
+                <i class="fa-solid fa-list"></i> Repositories
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Details" asp-route-id="@Model.PropertyType.ObjectType!.Repository!.Id">
+                <i class="fa-solid fa-database"></i> @Model.PropertyType.ObjectType!.Repository!.Name
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a id="backToRepository" asp-page="/ObjectTypes/Details" , asp-route-id="@Model.PropertyType.ObjectType.Id" )">
+                <i class="fa-solid fa-cube"></i> @Model.PropertyType.ObjectType.Name
+            </a>
+        </li>
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fa-solid fa-diagram-project me-1"></i> Properties: @Model.PropertyType.Name</h4>
+       
+        </div>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PropertyType.Name)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PropertyType.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PropertyType.Description)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PropertyType.Description)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PropertyType.DataType)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PropertyType.DataType)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PropertyType.ObjectType)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PropertyType.ObjectType.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PropertyType.CreatedBy)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PropertyType.CreatedBy.UserName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PropertyType.CreatedAt)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PropertyType.CreatedAt)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PropertyType.UpdatedBy)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PropertyType.UpdatedBy.UserName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.PropertyType.UpdatedAt)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.PropertyType.UpdatedAt)
+            </dd>
+        </dl>
+    </div>
+</div>

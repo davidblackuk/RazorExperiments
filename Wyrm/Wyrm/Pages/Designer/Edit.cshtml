@@ -1,0 +1,56 @@
+@page
+@model Wyrm.Pages.Designer.EditModel
+
+@{
+    ViewData["Title"] = "Edit Designer";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-page="/Index">
+                <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Index">
+                <i class="fa-solid fa-list"></i> Designer
+            </a>
+        </li>
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h4 class="mb-0"> <i class="fa-solid fa-list me-1"></i> Properties: @Model.Repository.Name </h4>
+    </div>
+    <div class="card-body">
+        <form method="post" id="repositoryForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Repository.Id" />
+            <input type="hidden" asp-for="Repository.CreatedById" />
+            <input type="hidden" asp-for="Repository.CreatedAt" />
+            <input type="hidden" asp-for="Repository.UpdatedById" />
+            <input type="hidden" asp-for="Repository.UpdatedAt" />
+            <div class="form-group mb-3">
+                <label asp-for="Repository.Name" class="control-label"></label>
+                <input asp-for="Repository.Name" class="form-control" />
+                <span asp-validation-for="Repository.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Repository.Description" class="control-label"></label>
+                <textarea asp-for="Repository.Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="Repository.Description" class="text-danger"></span>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-center">
+        <button type="submit" form="repositoryForm" class="btn btn-primary btn-sm">Save</button>
+        <a asp-page="/Designer/Index"  class="btn btn-secondary btn-sm">Cancel</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

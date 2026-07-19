@@ -1,0 +1,98 @@
+@page
+@model Wyrm.Pages.ObjectTypes.CreateModel
+
+@{
+    ViewData["Title"] = "Create Object Type";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-page="/Index" , new id=" = Model.Repository.Id">
+                <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Index">
+                <i class="fa-solid fa-list"></i> Designer
+            </a>
+        </li>
+     
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Details" asp-route-id="@Model.ObjectType.Repository!.Id">
+                <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository!.Name
+            </a>
+        </li>
+
+     
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="fa-solid fa-cube me-1"></i> Create Object Type</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" id="objectTypeForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="ObjectType.CreatedById" />
+            <input type="hidden" asp-for="ObjectType.CreatedAt" />
+            <input type="hidden" asp-for="ObjectType.UpdatedById" />
+            <input type="hidden" asp-for="ObjectType.UpdatedAt" />
+            <input type="hidden" asp-for="ObjectType.RepositoryId" />
+            <div class="form-group mb-3">
+                <label asp-for="ObjectType.Name" class="control-label"></label>
+                <input asp-for="ObjectType.Name" class="form-control" />
+                <span asp-validation-for="ObjectType.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="ObjectType.Description" class="control-label"></label>
+                <textarea asp-for="ObjectType.Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="ObjectType.Description" class="text-danger"></span>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-center">
+        <button type="submit" form="objectTypeForm" class="btn btn-primary btn-sm">Create</button>
+        <a asp-page="/Designer/Details" asp-route-id="@Model.ObjectType.RepositoryId" class="btn btn-secondary btn-sm">Cancel</a>
+    </div>
+</div>
+
+<div class="mt-4 card shadow">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="fa-solid fa-diagram-project me-1"></i> System Property Types</h4>
+    </div>
+    <div class="card-body">
+        @if (Model.ObjectType.PropertyTypes.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Data Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var propertyType in Model.ObjectType.PropertyTypes)
+                    {
+                        <tr>
+                            <td>@propertyType.Name</td>
+                            <td>@propertyType.Description</td>
+                            <td>@propertyType.DataType</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No system property types defined.</p>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

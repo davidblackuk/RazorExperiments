@@ -1,0 +1,75 @@
+@page
+@model Wyrm.Pages.PropertyTypes.EditModel
+
+@{
+    ViewData["Title"] = "Edit Property Type";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-page="/Index">
+                <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Index">
+                <i class="fa-solid fa-list"></i> Repositories
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Details" asp-route-id="@Model.PropertyType.ObjectType!.Repository!.Id">
+                <i class="fa-solid fa-database"></i> @Model.PropertyType.ObjectType!.Repository!.Name
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a id="backToRepository" asp-page="/ObjectTypes/Details" , asp-route-id="@Model.PropertyType.ObjectType.Id" )">
+                <i class="fa-solid fa-cube"></i> @Model.PropertyType.ObjectType.Name
+            </a>
+        </li>
+
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="fa-solid fa-diagram-project me-1"></i> Edit @Model.PropertyType.Name</h4>
+    </div>
+    <div class="card-body">
+        <form method="post" id="propertyTypeForm">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="PropertyType.Id" />
+            <input type="hidden" asp-for="PropertyType.CreatedById" />
+            <input type="hidden" asp-for="PropertyType.CreatedAt" />
+            <input type="hidden" asp-for="PropertyType.UpdatedById" />
+            <input type="hidden" asp-for="PropertyType.UpdatedAt" />
+            <input type="hidden" asp-for="PropertyType.ObjectTypeId" />
+            <div class="form-group mb-3">
+                <label asp-for="PropertyType.Name" class="control-label"></label>
+                <input asp-for="PropertyType.Name" class="form-control" />
+                <span asp-validation-for="PropertyType.Name" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="PropertyType.Description" class="control-label"></label>
+                <textarea asp-for="PropertyType.Description" class="form-control" rows="4"></textarea>
+                <span asp-validation-for="PropertyType.Description" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="PropertyType.DataType" class="control-label"></label>
+                <select disabled asp-for="PropertyType.DataType" class="form-control" asp-items="Html.GetEnumSelectList<Wyrm.Models.PropertyDataType>()">
+                </select>
+                <span asp-validation-for="PropertyType.DataType" class="text-danger"></span>
+            </div>
+        </form>
+    </div>
+    <div class="card-footer text-center">
+        <button type="submit" form="propertyTypeForm" class="btn btn-primary btn-sm">Save</button>
+        <a onclick="history.back()" id="cancelButton"  class="btn btn-secondary btn-sm">Cancel</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+  
+}
+

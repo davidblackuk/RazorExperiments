@@ -1,0 +1,137 @@
+@page
+@model Wyrm.Pages.ObjectTypes.DetailsModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-page="/Index" , new id=" = Model.Repository.Id">
+                <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Index">
+                <i class="fa-solid fa-list"></i> Designer
+            </a>
+        </li>
+     
+        <li class="breadcrumb-item">
+            <a asp-page="/Designer/Details" asp-route-id="@Model.ObjectType.Repository!.Id">
+                <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository!.Name
+            </a>
+        </li>
+
+
+
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4 class="mb-0"><i class="fa-solid fa-cube me-1"></i> Object Type: @Model.ObjectType.Name</h4>
+           
+        </div>
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ObjectType.Name)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ObjectType.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ObjectType.Description)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ObjectType.Description)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ObjectType.CreatedBy)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ObjectType.CreatedBy.UserName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ObjectType.CreatedAt)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ObjectType.CreatedAt)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ObjectType.UpdatedBy)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ObjectType.UpdatedBy.UserName)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.ObjectType.UpdatedAt)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.ObjectType.UpdatedAt)
+            </dd>
+        </dl>
+    </div>
+</div>
+
+<div class="mt-4 card shadow">
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <h4 class="mb-0"><i class="fa-solid fa-diagram-project me-1"></i>  Property Types</h4>
+            <a asp-page="/PropertyTypes/CreatePropertyType" asp-route-objectTypeId="@Model.ObjectType.Id" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-plus"></i> New Property Type
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.ObjectType.PropertyTypes.Any())
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var propertyType in Model.ObjectType.PropertyTypes)
+                    {
+                        <tr>
+                            <td>
+                                @if (propertyType.IsSystemProperty)
+                                {
+                                    <i class="fa-solid fa-table-cells-row-lock  me-2" title="System Property"></i>
+                                }
+                                else
+                                {
+                                    <i class="fa-solid fa-table-list  me-2" title="System Property"></i>                                    
+                                }
+                                @propertyType.Name
+                            </td>
+                            <td>@propertyType.Description</td>
+                            <td>
+                                <a asp-page="/PropertyTypes/PropertyTypeDetails" asp-route-id="@propertyType.Id">Details</a> 
+                                @if (!propertyType.IsSystemProperty)
+                                {
+                                    <text>|</text> 
+                                    <a asp-page="/PropertyTypes/EditPropertyType" asp-route-id="@propertyType.Id">Edit</a>
+                                    <text>|</text>
+                                    <a asp-page="/PropertyTypes/DeletePropertyType" asp-route-id="@propertyType.Id">Delete</a>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+        else
+        {
+            <p>No property types found.</p>
+        }
+    </div>
+</div>
