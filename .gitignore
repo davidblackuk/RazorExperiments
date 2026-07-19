@@ -7,3 +7,6 @@
 /FirstApp/FirstApp/obj
 /.vs
 /FirstApp/.vs
+/FirstApp/FirstApp/*.db
+/FirstApp/FirstApp/*.db-shm
+/FirstApp/FirstApp/*.db-wal
