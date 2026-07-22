@@ -38,7 +38,7 @@
             <div class="list-group">
                 @foreach (var objectType in Model.Repository.ObjectTypes)
                 {
-                    <div class="list-group-item">
+                    <a asp-area="Explorer" asp-page="./Instances" asp-route-objectTypeId="@objectType.Id" class="list-group-item list-group-item-action">
                         <div class="d-flex w-100 justify-content-between">
                             <h5 class="mb-1">@objectType.Name</h5>
                             <small>@objectType.PropertyTypes.Count properties</small>
@@ -47,7 +47,7 @@
                         {
                             <p class="mb-1">@objectType.Description</p>
                         }
-                    </div>
+                    </a>
                 }
             </div>
         }

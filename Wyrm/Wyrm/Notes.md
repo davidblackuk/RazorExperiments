@@ -14,3 +14,4 @@ These are the icons for the Designer section of the application
 | Repository     | `<i class="fa-solid fa-database"></i> `				|
 | Object types   | `<i class="fa-solid fa-cube me-1"></i> `				|
 | property types | `<i class="fa-solid fa-diagram-project me-1"></i>`	|
+| Object instance | `<i class="fa-solid fa-clone me-1"></i>`			|

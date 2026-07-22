@@ -1,0 +1,38 @@
+@model (PropertyFieldInput Field, int Index)
+
+@{
+    var field = Model.Field;
+    var index = Model.Index;
+    var inputId = $"Fields_{index}__RawValue";
+}
+
+<div class="mb-3">
+    <label for="@inputId" class="form-label">@field.Name</label>
+    @if (!string.IsNullOrEmpty(field.Description))
+    {
+        <div class="form-text mb-1">@field.Description</div>
+    }
+    <input type="hidden" name="Fields[@index].PropertyTypeId" value="@field.PropertyTypeId" />
+
+    @switch (field.DataType)
+    {
+        case PropertyDataType.Memo:
+            <textarea id="@inputId" name="Fields[@index].RawValue" class="form-control" rows="3">@field.RawValue</textarea>
+            break;
+        case PropertyDataType.Int:
+            <input type="number" step="1" id="@inputId" name="Fields[@index].RawValue" class="form-control" value="@field.RawValue" />
+            break;
+        case PropertyDataType.Number:
+            <input type="number" step="any" id="@inputId" name="Fields[@index].RawValue" class="form-control" value="@field.RawValue" />
+            break;
+        case PropertyDataType.Date:
+            <input type="date" id="@inputId" name="Fields[@index].RawValue" class="form-control" value="@field.RawValue" />
+            break;
+        case PropertyDataType.DateTime:
+            <input type="datetime-local" id="@inputId" name="Fields[@index].RawValue" class="form-control" value="@field.RawValue" />
+            break;
+        default:
+            <input type="text" id="@inputId" name="Fields[@index].RawValue" class="form-control" value="@field.RawValue" />
+            break;
+    }
+</div>

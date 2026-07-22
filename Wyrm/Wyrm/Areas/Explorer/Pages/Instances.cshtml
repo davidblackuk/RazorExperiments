@@ -1,0 +1,72 @@
+@page
+@model Wyrm.Areas.Explorer.Pages.InstancesModel
+
+@{
+    ViewData["Title"] = "Instances";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-area="" asp-page="/Index">
+                <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-area="Explorer" asp-page="/Index">
+                <i class="fa-solid fa-compass"></i> Explorer
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-area="Explorer" asp-page="./ObjectTypes" asp-route-repositoryId="@Model.ObjectType.Repository!.Id">
+                <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository!.Name
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <i class="fa-solid fa-cube"></i> @Model.ObjectType.Name
+        </li>
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-header">
+        <div class="d-flex justify-content-between">
+            <h4 class="mb-0"><i class="fa-solid fa-clone me-1"></i> @Model.ObjectType.Name - Instances</h4>
+            <a asp-area="Explorer" asp-page="./CreateInstance" asp-route-objectTypeId="@Model.ObjectType.Id" class="btn btn-primary btn-sm">
+                <i class="fa-solid fa-plus"></i> New Instance
+            </a>
+        </div>
+    </div>
+    <div class="card-body">
+        @if (Model.ObjectType.ObjectInstances.Any())
+        {
+            <div class="list-group">
+                @foreach (var instance in Model.ObjectType.ObjectInstances)
+                {
+                    <div class="list-group-item list-group-item-action">
+                        <div class="row align-items-center">
+                            <div class="col" style="cursor: pointer;" onclick="window.location.href='@Url.Page("./InstanceDetails", new { id = instance.Id })'">
+                                <div class="d-flex justify-content-between">
+                                    <h5 class="mb-1">@Model.DisplayNames[instance.Id]</h5>
+                                    <div class="d-flex align-items-center">
+                                        <a asp-area="Explorer" asp-page="./EditInstance" asp-route-id="@instance.Id" class="mx-1">
+                                            Edit
+                                        </a>
+                                        |
+                                        <a asp-area="Explorer" asp-page="./DeleteInstance" asp-route-id="@instance.Id" class="mx-1">
+                                            Delete
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <p class="text-muted">No instances found. Create one to get started.</p>
+        }
+    </div>
+</div>

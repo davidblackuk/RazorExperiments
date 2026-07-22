@@ -70,5 +70,10 @@ namespace Wyrm.Models
         /// Gets or sets the collection of property types associated with this object type.
         /// </summary>
         public ICollection<PropertyType> PropertyTypes { get; set; } = new List<PropertyType>();
+
+        /// <summary>
+        /// Gets or sets the collection of object instances that conform to this object type.
+        /// </summary>
+        public ICollection<ObjectInstance> ObjectInstances { get; set; } = new List<ObjectInstance>();
     }
 }

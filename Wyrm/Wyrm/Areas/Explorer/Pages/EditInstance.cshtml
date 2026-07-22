@@ -1,0 +1,54 @@
+@page
+@model Wyrm.Areas.Explorer.Pages.EditInstanceModel
+
+@{
+    ViewData["Title"] = "Edit Instance";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-area="" asp-page="/Index">
+                <i class="fa-solid fa-home"></i> Home
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-area="Explorer" asp-page="/Index">
+                <i class="fa-solid fa-compass"></i> Explorer
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-area="Explorer" asp-page="./ObjectTypes" asp-route-repositoryId="@Model.ObjectType.Repository!.Id">
+                <i class="fa-solid fa-database"></i> @Model.ObjectType.Repository!.Name
+            </a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-area="Explorer" asp-page="./Instances" asp-route-objectTypeId="@Model.ObjectType.Id">
+                <i class="fa-solid fa-cube"></i> @Model.ObjectType.Name
+            </a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <i class="fa-solid fa-clone"></i> @Model.DisplayName
+        </li>
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-header">
+        <h4 class="mb-0"><i class="fa-solid fa-clone me-1"></i> Edit @Model.DisplayName</h4>
+    </div>
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form method="post">
+            <input type="hidden" asp-for="InstanceId" />
+            @for (var i = 0; i < Model.Fields.Count; i++)
+            {
+                @await Html.PartialAsync("Shared/_PropertyValueEditor", (Model.Fields[i], i))
+            }
+            <div class="text-center mt-3">
+                <button type="submit" class="btn btn-primary btn-sm">Save</button>
+                <a onclick="history.back()" class="btn btn-secondary btn-sm" style="cursor: pointer;">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
