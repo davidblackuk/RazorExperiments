@@ -52,7 +52,7 @@ namespace Wyrm.Areas.Explorer.Pages
 
             ObjectType = objectType;
             ObjectTypeId = objectType.Id;
-            Fields = BuildFields(objectType.PropertyTypes, rawValue: _ => null);
+            Fields = BuildFields(EditableFields(objectType.PropertyTypes), rawValue: _ => null);
 
             return Page();
         }
@@ -78,10 +78,11 @@ namespace Wyrm.Areas.Explorer.Pages
 
             ObjectType = objectType;
 
+            var editableTypes = EditableFields(objectType.PropertyTypes);
             var postedRawValues = Fields.ToDictionary(f => f.PropertyTypeId, f => f.RawValue);
 
             var hasError = false;
-            foreach (var propertyType in objectType.PropertyTypes)
+            foreach (var propertyType in editableTypes)
             {
                 postedRawValues.TryGetValue(propertyType.Id, out var rawValue);
                 if (!PropertyValueParser.TryValidate(propertyType.DataType, rawValue, out var error))
@@ -93,7 +94,7 @@ namespace Wyrm.Areas.Explorer.Pages
 
             // Metadata doesn't round-trip through POST (only PropertyTypeId + RawValue do),
             // so rebuild Fields from the freshly-loaded PropertyTypes for redisplay on error.
-            Fields = BuildFields(objectType.PropertyTypes, rawValue: pt => postedRawValues.GetValueOrDefault(pt.Id));
+            Fields = BuildFields(editableTypes, rawValue: pt => postedRawValues.GetValueOrDefault(pt.Id));
 
             if (hasError)
             {
@@ -113,15 +114,23 @@ namespace Wyrm.Areas.Explorer.Pages
             _context.ObjectInstances.Add(instance);
             await _context.SaveChangesAsync();
 
-            foreach (var propertyType in objectType.PropertyTypes)
+            foreach (var propertyType in editableTypes)
             {
                 postedRawValues.TryGetValue(propertyType.Id, out var rawValue);
                 await PropertyValueStore.SetValueAsync(_context, instance, propertyType, rawValue, userId, now);
             }
 
+            var user = await _context.Users.FindAsync(userId);
+            await PropertyValueStore.SetAuditMirrorValuesAsync(_context, instance, objectType.PropertyTypes, user?.UserName ?? userId, userId, now, isCreate: true);
+
             await _context.SaveChangesAsync();
 
             return RedirectToPage("./Instances", new { objectTypeId = objectType.Id });
+        }
+
+        private static IReadOnlyList<PropertyType> EditableFields(IEnumerable<PropertyType> propertyTypes)
+        {
+            return propertyTypes.Where(pt => !SystemPropertyNames.IsAuditMirror(pt.Name)).ToList();
         }
 
         private static List<PropertyFieldInput> BuildFields(IEnumerable<PropertyType> propertyTypes, Func<PropertyType, string?> rawValue)

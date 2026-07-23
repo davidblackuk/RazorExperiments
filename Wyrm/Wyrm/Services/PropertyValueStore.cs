@@ -52,6 +52,35 @@ namespace Wyrm.Services
         }
 
         /// <summary>
+        /// Stamps the "Who Created"/"When Created"/"Who Updated"/"When Updated" system properties (see
+        /// <see cref="SystemPropertyNames"/>) from the instance's own audit fields, rather than from
+        /// user input. "Who/When Created" are only stamped on create, so they stay fixed afterwards.
+        /// </summary>
+        public static async Task SetAuditMirrorValuesAsync(ApplicationDbContext context, ObjectInstance instance, IEnumerable<PropertyType> propertyTypes, string userName, string userId, DateTime now, bool isCreate)
+        {
+            var whenText = now.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
+
+            foreach (var propertyType in propertyTypes)
+            {
+                switch (propertyType.Name)
+                {
+                    case SystemPropertyNames.WhoCreated when isCreate:
+                        await SetValueAsync(context, instance, propertyType, userName, userId, now);
+                        break;
+                    case SystemPropertyNames.WhenCreated when isCreate:
+                        await SetValueAsync(context, instance, propertyType, whenText, userId, now);
+                        break;
+                    case SystemPropertyNames.WhoUpdated:
+                        await SetValueAsync(context, instance, propertyType, userName, userId, now);
+                        break;
+                    case SystemPropertyNames.WhenUpdated:
+                        await SetValueAsync(context, instance, propertyType, whenText, userId, now);
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
         /// Creates, updates, or removes the value row for (instance, propertyType) based on rawValue.
         /// A blank rawValue removes any existing row. The caller must have already validated rawValue
         /// with <see cref="PropertyValueParser.TryValidate"/>.
