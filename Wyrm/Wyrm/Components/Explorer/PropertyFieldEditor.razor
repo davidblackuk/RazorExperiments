@@ -1,0 +1,35 @@
+<div class="mb-3">
+    <label class="form-label">@Field.Name</label>
+    @if (!string.IsNullOrEmpty(Field.Description))
+    {
+        <div class="form-text mb-1">@Field.Description</div>
+    }
+
+    @switch (Field.DataType)
+    {
+        case PropertyDataType.Memo:
+            <textarea class="form-control" rows="3" value="@Field.RawValue" @oninput="OnInput"></textarea>
+            break;
+        case PropertyDataType.Int:
+            <input type="number" step="1" class="form-control" value="@Field.RawValue" @oninput="OnInput" />
+            break;
+        case PropertyDataType.Number:
+            <input type="number" step="any" class="form-control" value="@Field.RawValue" @oninput="OnInput" />
+            break;
+        case PropertyDataType.Date:
+            <input type="date" class="form-control" value="@Field.RawValue" @oninput="OnInput" />
+            break;
+        case PropertyDataType.DateTime:
+            <input type="datetime-local" class="form-control" value="@Field.RawValue" @oninput="OnInput" />
+            break;
+        default:
+            <input type="text" class="form-control" value="@Field.RawValue" @oninput="OnInput" />
+            break;
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required PropertyFieldInput Field { get; set; }
+
+    private void OnInput(ChangeEventArgs e) => Field.RawValue = e.Value?.ToString();
+}

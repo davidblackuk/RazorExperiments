@@ -1,0 +1,49 @@
+<div id="explorerDetailBody">
+    @if (IsLoading)
+    {
+        <p class="text-muted mb-0">Loading&hellip;</p>
+    }
+    else if (Detail == null)
+    {
+        <p class="text-muted mb-0">Select an instance from the grid to view its details.</p>
+    }
+    else
+    {
+        var objectType = Detail.ObjectInstance.ObjectType!;
+        <div class="d-flex justify-content-between align-items-center explorer-pane-title">
+            <h5 class="mb-0"><i class="fa-solid fa-clone me-1"></i> @Detail.DisplayName</h5>
+            <div>
+                <button type="button" class="btn btn-primary btn-sm" @onclick="() => OnEditRequested.InvokeAsync()">Edit</button>
+                <button type="button" class="btn btn-danger btn-sm" @onclick="() => OnDeleteRequested.InvokeAsync()">Delete</button>
+            </div>
+        </div>
+        <dl class="row mb-0 mt-2">
+            @foreach (var propertyType in objectType.PropertyTypes)
+            {
+                var value = Detail.Values.GetValueOrDefault(propertyType.Id);
+                <dt class="col-sm-3">@propertyType.Name</dt>
+                <dd class="col-sm-9">
+                    @if (string.IsNullOrEmpty(value))
+                    {
+                        <span class="text-muted">(not set)</span>
+                    }
+                    else if (propertyType.DataType == PropertyDataType.Memo)
+                    {
+                        <span style="white-space: pre-wrap;">@value</span>
+                    }
+                    else
+                    {
+                        @value
+                    }
+                </dd>
+            }
+        </dl>
+    }
+</div>
+
+@code {
+    [Parameter] public ExplorerInstanceDetailViewModel? Detail { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public EventCallback OnEditRequested { get; set; }
+    [Parameter] public EventCallback OnDeleteRequested { get; set; }
+}

@@ -1,0 +1,333 @@
+@page "/Explorer"
+@attribute [Authorize]
+@rendermode InteractiveServer
+@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject IJSRuntime JS
+
+<PageTitle>Explorer</PageTitle>
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/"><i class="fa-solid fa-home"></i> Home</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+            <i class="fa-solid fa-compass"></i> Explorer
+        </li>
+    </ol>
+</nav>
+
+<div class="card shadow">
+    <div class="card-body p-0">
+        <div class="explorer-shell">
+            <div class="explorer-sidebar">
+                <RepositoryTree Repositories="_repositories" SelectedObjectTypeId="_selectedObjectType?.Id" OnObjectTypeSelected="SelectObjectTypeAsync" />
+            </div>
+            <div class="explorer-splitter explorer-splitter-v"></div>
+            <div class="explorer-main">
+                <div class="explorer-top">
+                    <InstanceGrid ObjectType="_selectedObjectType" Rows="_rows" IsLoading="_gridLoading"
+                                  SelectedInstanceId="_selectedInstance?.Id"
+                                  OnInstanceSelected="SelectInstanceAsync"
+                                  OnCreateRequested="OpenCreateForm"
+                                  OnEditRequested="OpenEditFormForRowAsync"
+                                  OnDeleteRequested="OpenDeleteConfirmForRow" />
+                </div>
+                <div class="explorer-splitter explorer-splitter-h"></div>
+                <div class="explorer-bottom">
+                    <InstanceDetail Detail="_selectedInstanceDetail" IsLoading="_detailLoading"
+                                     OnEditRequested="OpenEditFormForSelectedAsync"
+                                     OnDeleteRequested="OpenDeleteConfirmForSelected" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (_formMode != FormMode.None)
+{
+    <InstanceFormModal Title="@_formTitle" Fields="_formFields" OnSave="SaveFormAsync" OnCancel="CloseForm" />
+}
+
+@if (_deleteTargetId.HasValue)
+{
+    <DeleteConfirmModal DisplayName="@_deleteTargetDisplayName" OnConfirm="ConfirmDeleteAsync" OnCancel="CancelDelete" />
+}
+
+@code {
+    private enum FormMode { None, Create, Edit }
+
+    private List<Repository> _repositories = new();
+
+    private ObjectType? _selectedObjectType;
+    private List<ExplorerInstanceRow>? _rows;
+    private bool _gridLoading;
+
+    private ObjectInstance? _selectedInstance;
+    private ExplorerInstanceDetailViewModel? _selectedInstanceDetail;
+    private bool _detailLoading;
+
+    private FormMode _formMode = FormMode.None;
+    private string _formTitle = string.Empty;
+    private List<PropertyFieldInput> _formFields = new();
+    private int? _editingInstanceId;
+
+    private int? _deleteTargetId;
+    private string _deleteTargetDisplayName = string.Empty;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthStateTask { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var context = await DbContextFactory.CreateDbContextAsync();
+        _repositories = await context.Repositories
+            .Include(r => r.ObjectTypes)
+            .OrderBy(r => r.Name)
+            .ToListAsync();
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await JS.InvokeVoidAsync("explorerSplitters.init", ".explorer-shell");
+        }
+    }
+
+    private async Task<string> GetUserIdAsync()
+    {
+        var state = await AuthStateTask!;
+        return state.User.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? throw new InvalidOperationException("User id claim missing.");
+    }
+
+    private static List<PropertyType> EditableFields(IEnumerable<PropertyType> propertyTypes) =>
+        propertyTypes.Where(pt => !SystemPropertyNames.IsAuditMirror(pt.Name)).ToList();
+
+    private async Task SelectObjectTypeAsync(ObjectType objectType)
+    {
+        _selectedInstance = null;
+        _selectedInstanceDetail = null;
+        _gridLoading = true;
+        StateHasChanged();
+
+        await using var context = await DbContextFactory.CreateDbContextAsync();
+        var loaded = await context.ObjectTypes
+            .Include(o => o.Repository)
+            .Include(o => o.PropertyTypes.OrderBy(pt => pt.Id))
+            .Include(o => o.ObjectInstances).ThenInclude(i => i.CreatedBy)
+            .Include(o => o.ObjectInstances).ThenInclude(i => i.UpdatedBy)
+            .FirstAsync(o => o.Id == objectType.Id);
+
+        var displayNames = await InstanceDisplayHelper.GetDisplayNamesAsync(context, loaded.Id, loaded.ObjectInstances.Select(i => i.Id));
+
+        _selectedObjectType = loaded;
+        _rows = loaded.ObjectInstances
+            .Select(i => new ExplorerInstanceRow
+            {
+                Id = i.Id,
+                DisplayName = displayNames[i.Id],
+                CreatedByUserName = i.CreatedBy?.UserName,
+                UpdatedByUserName = i.UpdatedBy?.UserName
+            })
+            .OrderBy(r => r.DisplayName)
+            .ToList();
+        _gridLoading = false;
+    }
+
+    private async Task SelectInstanceAsync(int instanceId)
+    {
+        _detailLoading = true;
+        StateHasChanged();
+
+        await using var context = await DbContextFactory.CreateDbContextAsync();
+        var instance = await context.ObjectInstances
+            .Include(i => i.ObjectType!.Repository)
+            .Include(i => i.ObjectType!.PropertyTypes.OrderBy(pt => pt.Id))
+            .Include(i => i.CreatedBy)
+            .Include(i => i.UpdatedBy)
+            .FirstAsync(i => i.Id == instanceId);
+
+        var values = await PropertyValueStore.LoadRawValuesAsync(context, instance.Id, instance.ObjectType!.PropertyTypes);
+        var displayName = await InstanceDisplayHelper.GetDisplayNameAsync(context, instance);
+
+        _selectedInstance = instance;
+        _selectedInstanceDetail = new ExplorerInstanceDetailViewModel
+        {
+            ObjectInstance = instance,
+            DisplayName = displayName,
+            Values = values
+        };
+        _detailLoading = false;
+    }
+
+    private void OpenCreateForm()
+    {
+        if (_selectedObjectType == null)
+        {
+            return;
+        }
+
+        _formMode = FormMode.Create;
+        _editingInstanceId = null;
+        _formTitle = $"New {_selectedObjectType.Name}";
+        _formFields = EditableFields(_selectedObjectType.PropertyTypes)
+            .Select(pt => new PropertyFieldInput { PropertyTypeId = pt.Id, Name = pt.Name, Description = pt.Description, DataType = pt.DataType, RawValue = null })
+            .ToList();
+    }
+
+    private async Task OpenEditFormAsync(int instanceId)
+    {
+        await using var context = await DbContextFactory.CreateDbContextAsync();
+        var instance = await context.ObjectInstances
+            .Include(i => i.ObjectType!.PropertyTypes.OrderBy(pt => pt.Id))
+            .FirstAsync(i => i.Id == instanceId);
+
+        var editable = EditableFields(instance.ObjectType!.PropertyTypes);
+        var existingValues = await PropertyValueStore.LoadRawValuesAsync(context, instance.Id, editable);
+        var displayName = await InstanceDisplayHelper.GetDisplayNameAsync(context, instance);
+
+        _formMode = FormMode.Edit;
+        _editingInstanceId = instanceId;
+        _formTitle = $"Edit {displayName}";
+        _formFields = editable
+            .Select(pt => new PropertyFieldInput { PropertyTypeId = pt.Id, Name = pt.Name, Description = pt.Description, DataType = pt.DataType, RawValue = existingValues.GetValueOrDefault(pt.Id) })
+            .ToList();
+    }
+
+    private Task OpenEditFormForRowAsync(int instanceId) => OpenEditFormAsync(instanceId);
+
+    private Task OpenEditFormForSelectedAsync() =>
+        _selectedInstance != null ? OpenEditFormAsync(_selectedInstance.Id) : Task.CompletedTask;
+
+    private void CloseForm()
+    {
+        _formMode = FormMode.None;
+        _formFields = new List<PropertyFieldInput>();
+        _editingInstanceId = null;
+    }
+
+    private async Task SaveFormAsync()
+    {
+        if (_selectedObjectType == null)
+        {
+            return;
+        }
+
+        var userId = await GetUserIdAsync();
+        var now = DateTime.UtcNow;
+        await using var context = await DbContextFactory.CreateDbContextAsync();
+
+        int savedInstanceId;
+
+        if (_formMode == FormMode.Create)
+        {
+            var objectType = await context.ObjectTypes
+                .Include(o => o.PropertyTypes.OrderBy(pt => pt.Id))
+                .FirstAsync(o => o.Id == _selectedObjectType.Id);
+
+            var instance = new ObjectInstance
+            {
+                ObjectTypeId = objectType.Id,
+                CreatedById = userId,
+                CreatedAt = now,
+                UpdatedById = userId,
+                UpdatedAt = now
+            };
+            context.ObjectInstances.Add(instance);
+            await context.SaveChangesAsync();
+
+            await SavePropertyValuesAsync(context, instance, objectType.PropertyTypes, userId, now, isCreate: true);
+            savedInstanceId = instance.Id;
+        }
+        else if (_formMode == FormMode.Edit && _editingInstanceId.HasValue)
+        {
+            var instance = await context.ObjectInstances
+                .Include(i => i.ObjectType!.PropertyTypes.OrderBy(pt => pt.Id))
+                .FirstAsync(i => i.Id == _editingInstanceId.Value);
+
+            instance.UpdatedById = userId;
+            instance.UpdatedAt = now;
+
+            await SavePropertyValuesAsync(context, instance, instance.ObjectType!.PropertyTypes, userId, now, isCreate: false);
+            savedInstanceId = instance.Id;
+        }
+        else
+        {
+            return;
+        }
+
+        CloseForm();
+        await SelectObjectTypeAsync(_selectedObjectType);
+        await SelectInstanceAsync(savedInstanceId);
+    }
+
+    private async Task SavePropertyValuesAsync(ApplicationDbContext context, ObjectInstance instance, IEnumerable<PropertyType> propertyTypes, string userId, DateTime now, bool isCreate)
+    {
+        var propertyTypeList = propertyTypes.ToList();
+        var editable = EditableFields(propertyTypeList);
+
+        foreach (var field in _formFields)
+        {
+            var propertyType = editable.First(pt => pt.Id == field.PropertyTypeId);
+            await PropertyValueStore.SetValueAsync(context, instance, propertyType, field.RawValue, userId, now);
+        }
+
+        var user = await context.Users.FindAsync(userId);
+        await PropertyValueStore.SetAuditMirrorValuesAsync(context, instance, propertyTypeList, user?.UserName ?? userId, userId, now, isCreate);
+        await context.SaveChangesAsync();
+    }
+
+    private void OpenDeleteConfirmForRow(int instanceId)
+    {
+        var row = _rows?.FirstOrDefault(r => r.Id == instanceId);
+        _deleteTargetId = instanceId;
+        _deleteTargetDisplayName = row?.DisplayName ?? $"Instance #{instanceId}";
+    }
+
+    private void OpenDeleteConfirmForSelected()
+    {
+        if (_selectedInstanceDetail == null)
+        {
+            return;
+        }
+
+        _deleteTargetId = _selectedInstanceDetail.ObjectInstance.Id;
+        _deleteTargetDisplayName = _selectedInstanceDetail.DisplayName;
+    }
+
+    private void CancelDelete()
+    {
+        _deleteTargetId = null;
+        _deleteTargetDisplayName = string.Empty;
+    }
+
+    private async Task ConfirmDeleteAsync()
+    {
+        if (!_deleteTargetId.HasValue || _selectedObjectType == null)
+        {
+            return;
+        }
+
+        var deletedId = _deleteTargetId.Value;
+
+        await using var context = await DbContextFactory.CreateDbContextAsync();
+        var instance = await context.ObjectInstances.FindAsync(deletedId);
+        if (instance != null)
+        {
+            context.ObjectInstances.Remove(instance);
+            await context.SaveChangesAsync();
+        }
+
+        CancelDelete();
+
+        if (_selectedInstance?.Id == deletedId)
+        {
+            _selectedInstance = null;
+            _selectedInstanceDetail = null;
+        }
+
+        await SelectObjectTypeAsync(_selectedObjectType);
+    }
+}

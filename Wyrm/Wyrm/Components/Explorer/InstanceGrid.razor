@@ -1,0 +1,64 @@
+<div id="explorerGridBody">
+    @if (ObjectType == null)
+    {
+        <p class="text-muted mb-0">Select an object type from the tree to view its instances.</p>
+    }
+    else if (IsLoading)
+    {
+        <p class="text-muted mb-0">Loading&hellip;</p>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center explorer-pane-title">
+            <h5 class="mb-0"><i class="fa-solid fa-cube me-1"></i> @ObjectType.Name</h5>
+            <button type="button" class="btn btn-primary btn-sm" @onclick="() => OnCreateRequested.InvokeAsync()">
+                <i class="fa-solid fa-plus"></i> New Instance
+            </button>
+        </div>
+
+        @if (Rows == null || !Rows.Any())
+        {
+            <p class="text-muted mb-0">No instances found. Create one to get started.</p>
+        }
+        else
+        {
+            <table class="table table-hover explorer-instance-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Who Created</th>
+                        <th>Who Updated</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var row in Rows)
+                    {
+                        <tr class="explorer-instance-row @(SelectedInstanceId == row.Id ? "table-active" : "")"
+                            @onclick="() => OnInstanceSelected.InvokeAsync(row.Id)">
+                            <td>@row.DisplayName</td>
+                            <td>@row.CreatedByUserName</td>
+                            <td>@row.UpdatedByUserName</td>
+                            <td class="text-end" @onclick:stopPropagation="true">
+                                <a href="#" @onclick="() => OnEditRequested.InvokeAsync(row.Id)" @onclick:preventDefault="true" class="mx-1">Edit</a>
+                                |
+                                <a href="#" @onclick="() => OnDeleteRequested.InvokeAsync(row.Id)" @onclick:preventDefault="true" class="mx-1">Delete</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public ObjectType? ObjectType { get; set; }
+    [Parameter] public List<ExplorerInstanceRow>? Rows { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public int? SelectedInstanceId { get; set; }
+    [Parameter] public EventCallback<int> OnInstanceSelected { get; set; }
+    [Parameter] public EventCallback OnCreateRequested { get; set; }
+    [Parameter] public EventCallback<int> OnEditRequested { get; set; }
+    [Parameter] public EventCallback<int> OnDeleteRequested { get; set; }
+}

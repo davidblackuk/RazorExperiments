@@ -1,0 +1,26 @@
+<div class="modal d-block explorer-modal-backdrop" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Delete: @DisplayName</h5>
+                <button type="button" class="btn-close" @onclick="() => OnCancel.InvokeAsync()"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete <strong>@DisplayName</strong>?</p>
+                <div class="alert alert-danger mb-0">
+                    Deleting this instance will delete all of its property values. There is no undo operation for this action.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" @onclick="() => OnCancel.InvokeAsync()">Cancel</button>
+                <button type="button" class="btn btn-danger btn-sm" @onclick="() => OnConfirm.InvokeAsync()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required string DisplayName { get; set; }
+    [Parameter] public EventCallback OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+}

@@ -1,0 +1,60 @@
+<div class="modal d-block explorer-modal-backdrop" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">@Title</h5>
+                <button type="button" class="btn-close" @onclick="() => OnCancel.InvokeAsync()"></button>
+            </div>
+            <div class="modal-body">
+                @if (_errors.Count > 0)
+                {
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            @foreach (var error in _errors)
+                            {
+                                <li>@error</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                @foreach (var field in Fields)
+                {
+                    <PropertyFieldEditor Field="field" />
+                }
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-sm" @onclick="() => OnCancel.InvokeAsync()">Cancel</button>
+                <button type="button" class="btn btn-primary btn-sm" @onclick="Save">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required string Title { get; set; }
+    [Parameter, EditorRequired] public required List<PropertyFieldInput> Fields { get; set; }
+    [Parameter] public EventCallback OnSave { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private List<string> _errors = new();
+
+    private async Task Save()
+    {
+        _errors = new List<string>();
+
+        foreach (var field in Fields)
+        {
+            if (!PropertyValueParser.TryValidate(field.DataType, field.RawValue, out var error))
+            {
+                _errors.Add($"{field.Name}: {error}");
+            }
+        }
+
+        if (_errors.Count > 0)
+        {
+            return;
+        }
+
+        await OnSave.InvokeAsync();
+    }
+}
