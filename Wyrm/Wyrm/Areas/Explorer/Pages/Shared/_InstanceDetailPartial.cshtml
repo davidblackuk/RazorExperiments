@@ -1,0 +1,34 @@
+@model Wyrm.ViewModels.ExplorerInstanceDetailViewModel
+@{
+    var objectType = Model.ObjectInstance.ObjectType!;
+}
+
+<div class="d-flex justify-content-between align-items-center explorer-pane-title">
+    <h5 class="mb-0"><i class="fa-solid fa-clone me-1"></i> @Model.DisplayName</h5>
+    <div>
+        <a asp-area="Explorer" asp-page="/EditInstance" asp-route-id="@Model.ObjectInstance.Id" class="btn btn-primary btn-sm">Edit</a>
+        <a asp-area="Explorer" asp-page="/DeleteInstance" asp-route-id="@Model.ObjectInstance.Id" class="btn btn-danger btn-sm">Delete</a>
+    </div>
+</div>
+
+<dl class="row mb-0 mt-2">
+    @foreach (var propertyType in objectType.PropertyTypes)
+    {
+        var value = Model.Values.GetValueOrDefault(propertyType.Id);
+        <dt class="col-sm-3">@propertyType.Name</dt>
+        <dd class="col-sm-9">
+            @if (string.IsNullOrEmpty(value))
+            {
+                <span class="text-muted">(not set)</span>
+            }
+            else if (propertyType.DataType == PropertyDataType.Memo)
+            {
+                <span style="white-space: pre-wrap;">@value</span>
+            }
+            else
+            {
+                @value
+            }
+        </dd>
+    }
+</dl>

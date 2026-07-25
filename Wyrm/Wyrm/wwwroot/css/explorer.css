@@ -1,0 +1,111 @@
+.explorer-shell {
+    display: flex;
+    height: calc(100vh - 220px);
+    min-height: 480px;
+}
+
+.explorer-sidebar {
+    flex: 0 0 280px;
+    min-width: 160px;
+    max-width: 60%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.explorer-tree {
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
+.explorer-pane-header {
+    padding: 0.6rem 1rem;
+    font-weight: 600;
+    color: white;
+    background-color: var(--glaucous);
+}
+
+.explorer-pane-title {
+    margin-bottom: 0.5rem;
+}
+
+.explorer-tree-node {
+    padding: 0.4rem 1rem;
+    cursor: pointer;
+}
+
+.explorer-tree-node:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.explorer-tree-objecttype-node {
+    padding-left: 2.75rem;
+}
+
+.explorer-tree-objecttype-node.active {
+    background-color: var(--pale-sky);
+    font-weight: 600;
+}
+
+.explorer-tree-caret {
+    display: inline-block;
+    width: 0.9rem;
+    transition: transform 0.15s ease;
+}
+
+.explorer-tree-repo-node.explorer-tree-expanded .explorer-tree-caret {
+    transform: rotate(90deg);
+}
+
+.explorer-tree-children.explorer-tree-collapsed {
+    display: none;
+}
+
+.explorer-tree-empty {
+    padding: 0.25rem 1rem 0.25rem 2rem;
+    font-size: 0.85rem;
+}
+
+.explorer-splitter-v {
+    flex: 0 0 6px;
+    cursor: col-resize;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.explorer-splitter-h {
+    flex: 0 0 6px;
+    cursor: row-resize;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.explorer-splitter-v:hover,
+.explorer-splitter-h:hover,
+.explorer-splitter-v.explorer-splitter-dragging,
+.explorer-splitter-h.explorer-splitter-dragging {
+    background-color: var(--sapphire-sky);
+}
+
+.explorer-main {
+    flex: 1 1 auto;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.explorer-top {
+    flex: 1 1 55%;
+    overflow-y: auto;
+    padding: 0.75rem 1rem;
+    min-height: 80px;
+}
+
+.explorer-bottom {
+    flex: 1 1 45%;
+    overflow-y: auto;
+    padding: 0.75rem 1rem;
+    min-height: 80px;
+}
+
+.explorer-instance-row {
+    cursor: pointer;
+}
