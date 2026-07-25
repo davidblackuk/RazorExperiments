@@ -26,7 +26,7 @@ namespace Wyrm.Areas.Explorer.Pages
 
             var repository = await _context.Repositories
                 .Include(r => r.ObjectTypes)
-                    .ThenInclude(ot => ot.PropertyTypes)
+                    .ThenInclude(ot => ot.ObjectInstances)
                 .FirstOrDefaultAsync(r => r.Id == repositoryId);
 
             if (repository == null)
