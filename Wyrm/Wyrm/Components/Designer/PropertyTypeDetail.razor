@@ -1,0 +1,50 @@
+<div id="designerDetailBody">
+    @if (IsLoading)
+    {
+        <p class="text-muted mb-0">Loading&hellip;</p>
+    }
+    else if (PropertyType == null)
+    {
+        <p class="text-muted mb-0">Select a property type from the list above to view its details.</p>
+    }
+    else
+    {
+        <div class="d-flex justify-content-between align-items-center explorer-pane-title">
+            <h5 class="mb-0">
+                @if (PropertyType.IsSystemProperty)
+                {
+                    <i class="fa-solid fa-lock me-2" title="System Property"></i>
+                }
+                @PropertyType.Name
+            </h5>
+            @if (!PropertyType.IsSystemProperty)
+            {
+                <div>
+                    <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OnEditRequested.InvokeAsync()">Edit</Button>
+                    <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="() => OnDeleteRequested.InvokeAsync()">Delete</Button>
+                </div>
+            }
+        </div>
+        <dl class="row mb-0 mt-2">
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">@PropertyType.Description</dd>
+            <dt class="col-sm-3">Data Type</dt>
+            <dd class="col-sm-9">@PropertyType.DataType</dd>
+            <dt class="col-sm-3">Created By</dt>
+            <dd class="col-sm-9">@PropertyType.CreatedBy?.UserName</dd>
+            <dt class="col-sm-3">Created At</dt>
+            <dd class="col-sm-9">@PropertyType.CreatedAt</dd>
+            <dt class="col-sm-3">Updated By</dt>
+            <dd class="col-sm-9">@PropertyType.UpdatedBy?.UserName</dd>
+            <dt class="col-sm-3">Updated At</dt>
+            <dd class="col-sm-9">@PropertyType.UpdatedAt</dd>
+        </dl>
+    }
+</div>
+
+@code {
+    [Parameter] public PropertyType? PropertyType { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public EventCallback OnEditRequested { get; set; }
+    [Parameter] public EventCallback OnDeleteRequested { get; set; }
+}

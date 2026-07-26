@@ -24,8 +24,9 @@
                 <RepositoryToolbar CanDelete="_selectedRepositoryId.HasValue" OnAddRequested="OpenCreateRepositoryForm" OnDeleteRequested="OpenDeleteRepositoryConfirm" />
                 @if (_repositoryError != null)
                 {
-                    <Alert Color="AlertColor.Danger" Dismissable="true" OnClosed="() => _repositoryError = null" Class="m-2 py-1 px-2">
-                        @_repositoryError
+                    <Alert Color="AlertColor.Danger" Class="m-2 py-1 px-2 d-flex justify-content-between align-items-start">
+                        <span>@_repositoryError</span>
+                        <button type="button" class="btn-close" @onclick="() => _repositoryError = null"></button>
                     </Alert>
                 }
                 <RepositoryTree Repositories="_repositories" SelectedObjectTypeId="_selectedObjectType?.Id" OnObjectTypeSelected="SelectObjectTypeAsync"

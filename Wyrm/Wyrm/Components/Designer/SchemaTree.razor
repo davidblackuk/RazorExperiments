@@ -1,0 +1,97 @@
+<div class="designer-tree">
+    @if (!Repositories.Any())
+    {
+        <p class="text-muted p-3 mb-0">No repositories found. Add one from the toolbar above.</p>
+    }
+    else
+    {
+        <ul class="designer-tree-root list-unstyled mb-0">
+            @foreach (var repository in Repositories.OrderBy(r => r.Name))
+            {
+                <li>
+                    <div class="designer-tree-node designer-tree-repo-node @(IsCollapsed(repository.Id) ? "" : "designer-tree-expanded") @(SelectedRepositoryId == repository.Id ? "active" : "")">
+                        <span class="designer-tree-node-label" @onclick="() => SelectRepository(repository)">
+                            <i class="fa-solid fa-chevron-right designer-tree-caret"></i>
+                            <i class="fa-solid fa-database me-1"></i> @repository.Name
+                        </span>
+                        <span class="designer-tree-node-actions" @onclick:stopPropagation="true">
+                            <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Add Object Type" @onclick="() => OnAddObjectTypeRequested.InvokeAsync(repository)">
+                                <i class="fa-solid fa-plus"></i>
+                            </Button>
+                            <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Edit Repository" @onclick="() => OnEditRepositoryRequested.InvokeAsync(repository)">
+                                <i class="fa-solid fa-pen"></i>
+                            </Button>
+                            <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Delete Repository" @onclick="() => OnDeleteRepositoryRequested.InvokeAsync(repository)">
+                                <i class="fa-solid fa-trash"></i>
+                            </Button>
+                        </span>
+                    </div>
+                    <ul class="designer-tree-children list-unstyled @(IsCollapsed(repository.Id) ? "designer-tree-collapsed" : "")">
+                        @if (!repository.ObjectTypes.Any())
+                        {
+                            <li class="designer-tree-empty text-muted">No object types</li>
+                        }
+                        else
+                        {
+                            @foreach (var objectType in repository.ObjectTypes.OrderBy(ot => ot.Name))
+                            {
+                                <li>
+                                    <div class="designer-tree-node designer-tree-objecttype-node @(SelectedObjectTypeId == objectType.Id ? "active" : "")">
+                                        <span class="designer-tree-node-label" @onclick="() => OnObjectTypeSelected.InvokeAsync(objectType)">
+                                            <i class="fa-solid fa-cube me-1"></i> @objectType.Name
+                                        </span>
+                                        <span class="designer-tree-node-actions" @onclick:stopPropagation="true">
+                                            <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Add Property Type" @onclick="() => OnAddPropertyTypeRequested.InvokeAsync(objectType)">
+                                                <i class="fa-solid fa-plus"></i>
+                                            </Button>
+                                            <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Edit Object Type" @onclick="() => OnEditObjectTypeRequested.InvokeAsync(objectType)">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </Button>
+                                            <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Delete Object Type" @onclick="() => OnDeleteObjectTypeRequested.InvokeAsync(objectType)">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </Button>
+                                        </span>
+                                    </div>
+                                </li>
+                            }
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    }
+</div>
+
+@code {
+    [Parameter, EditorRequired] public required List<Repository> Repositories { get; set; }
+
+    [Parameter] public int? SelectedRepositoryId { get; set; }
+    [Parameter] public EventCallback<Repository> OnRepositorySelected { get; set; }
+    [Parameter] public EventCallback<Repository> OnAddObjectTypeRequested { get; set; }
+    [Parameter] public EventCallback<Repository> OnEditRepositoryRequested { get; set; }
+    [Parameter] public EventCallback<Repository> OnDeleteRepositoryRequested { get; set; }
+
+    [Parameter] public int? SelectedObjectTypeId { get; set; }
+    [Parameter] public EventCallback<ObjectType> OnObjectTypeSelected { get; set; }
+    [Parameter] public EventCallback<ObjectType> OnAddPropertyTypeRequested { get; set; }
+    [Parameter] public EventCallback<ObjectType> OnEditObjectTypeRequested { get; set; }
+    [Parameter] public EventCallback<ObjectType> OnDeleteObjectTypeRequested { get; set; }
+
+    private readonly HashSet<int> _collapsedRepositoryIds = new();
+
+    private void ToggleRepository(int repositoryId)
+    {
+        if (!_collapsedRepositoryIds.Add(repositoryId))
+        {
+            _collapsedRepositoryIds.Remove(repositoryId);
+        }
+    }
+
+    private async Task SelectRepository(Repository repository)
+    {
+        ToggleRepository(repository.Id);
+        await OnRepositorySelected.InvokeAsync(repository);
+    }
+
+    private bool IsCollapsed(int repositoryId) => _collapsedRepositoryIds.Contains(repositoryId);
+}

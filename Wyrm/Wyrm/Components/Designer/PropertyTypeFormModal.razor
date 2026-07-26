@@ -1,4 +1,4 @@
-<Modal @ref="_modal" Title="New Repository" UseStaticBackdrop="true">
+<Modal @ref="_modal" Title="@_title" UseStaticBackdrop="true">
     <BodyTemplate>
         @if (_error != null)
         {
@@ -12,6 +12,15 @@
             <label class="control-label">Description</label>
             <textarea class="form-control" rows="4" @bind="_description" @bind:event="oninput"></textarea>
         </div>
+        <div class="form-group mb-3">
+            <label class="control-label">Data Type</label>
+            <select class="form-control" @bind="_dataType">
+                @foreach (var value in Enum.GetValues<PropertyDataType>())
+                {
+                    <option value="@value">@value</option>
+                }
+            </select>
+        </div>
     </BodyTemplate>
     <FooterTemplate>
         <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="() => _modal!.HideAsync()">Cancel</Button>
@@ -20,17 +29,34 @@
 </Modal>
 
 @code {
-    [Parameter] public EventCallback<RepositoryFormInput> OnSave { get; set; }
+    [Parameter] public EventCallback<PropertyTypeFormInput> OnSave { get; set; }
 
     private Modal? _modal;
+    private string _title = "New Property Type";
+    private int? _id;
     private string _name = string.Empty;
     private string _description = string.Empty;
+    private PropertyDataType _dataType;
     private string? _error;
 
     public Task ShowAsync()
     {
+        _title = "New Property Type";
+        _id = null;
         _name = string.Empty;
         _description = string.Empty;
+        _dataType = PropertyDataType.String;
+        _error = null;
+        return _modal?.ShowAsync() ?? Task.CompletedTask;
+    }
+
+    public Task ShowAsync(PropertyType propertyType)
+    {
+        _title = $"Edit {propertyType.Name}";
+        _id = propertyType.Id;
+        _name = propertyType.Name;
+        _description = propertyType.Description;
+        _dataType = propertyType.DataType;
         _error = null;
         return _modal?.ShowAsync() ?? Task.CompletedTask;
     }
@@ -44,7 +70,7 @@
         }
 
         _error = null;
-        await OnSave.InvokeAsync(new RepositoryFormInput { Name = _name.Trim(), Description = _description.Trim() });
+        await OnSave.InvokeAsync(new PropertyTypeFormInput { Id = _id, Name = _name.Trim(), Description = _description.Trim(), DataType = _dataType });
 
         if (_modal != null)
         {

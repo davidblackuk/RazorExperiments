@@ -1,0 +1,67 @@
+.designer-tree {
+    overflow-y: auto;
+    flex: 1 1 auto;
+}
+
+.designer-tree-node {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.4rem 1rem;
+    gap: 0.5rem;
+}
+
+.designer-tree-node:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.designer-tree-node-label {
+    cursor: pointer;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.designer-tree-node-label i {
+    color: var(--sapphire-sky);
+}
+
+.designer-tree-node-actions {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.designer-tree-node-actions .btn i {
+    color: var(--sapphire-sky);
+}
+
+.designer-tree-objecttype-node .designer-tree-node-label {
+    padding-left: 1.75rem;
+}
+
+.designer-tree-objecttype-node.active,
+.designer-tree-repo-node.active {
+    background-color: var(--pale-sky);
+    font-weight: 600;
+}
+
+.designer-tree-caret {
+    display: inline-block;
+    width: 0.9rem;
+    transition: transform 0.15s ease;
+}
+
+.designer-tree-repo-node.designer-tree-expanded .designer-tree-caret {
+    transform: rotate(90deg);
+}
+
+.designer-tree-children.designer-tree-collapsed {
+    display: none;
+}
+
+.designer-tree-empty {
+    padding: 0.25rem 1rem 0.25rem 2rem;
+    font-size: 0.85rem;
+}

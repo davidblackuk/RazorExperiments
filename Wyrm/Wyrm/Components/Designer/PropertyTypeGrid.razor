@@ -1,0 +1,63 @@
+<div id="designerGridBody">
+    @if (ObjectType == null)
+    {
+        <p class="text-muted mb-0">Select an object type from the tree to view its property types.</p>
+    }
+    else if (IsLoading)
+    {
+        <p class="text-muted mb-0">Loading&hellip;</p>
+    }
+    else
+    {
+        <div class="explorer-pane-title">
+            <h5 class="mb-0"><i class="fa-solid fa-cube me-1"></i> @ObjectType.Name</h5>
+        </div>
+
+        @if (PropertyTypes == null || !PropertyTypes.Any())
+        {
+            <p class="text-muted mb-0">No property types found.</p>
+        }
+        else
+        {
+            <Grid TItem="PropertyType" Class="table table-hover explorer-instance-table mb-0"
+                  Data="PropertyTypes" AllowRowClick="true" OnRowClick="HandleRowClick" RowClass="GetRowClass">
+                <GridColumns>
+                    <GridColumn TItem="PropertyType" HeaderText="Name">
+                        @if (context.IsSystemProperty)
+                        {
+                            <i class="fa-solid fa-lock me-2" title="System Property"></i>
+                        }
+                        @context.Name
+                    </GridColumn>
+                    <GridColumn TItem="PropertyType" HeaderText="Data Type">@context.DataType</GridColumn>
+                    <GridColumn TItem="PropertyType" HeaderText="Description">@context.Description</GridColumn>
+                    <GridColumn TItem="PropertyType" HeaderText="Actions" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
+                        @if (!context.IsSystemProperty)
+                        {
+                            <span @onclick:stopPropagation="true">
+                                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="() => OnEditRequested.InvokeAsync(context.Id)">Edit</Button>
+                                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="() => OnDeleteRequested.InvokeAsync(context.Id)">Delete</Button>
+                            </span>
+                        }
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        }
+    }
+</div>
+
+@code {
+    [Parameter] public ObjectType? ObjectType { get; set; }
+    [Parameter] public List<PropertyType>? PropertyTypes { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public int? SelectedPropertyTypeId { get; set; }
+    [Parameter] public EventCallback<int> OnPropertyTypeSelected { get; set; }
+    [Parameter] public EventCallback<int> OnEditRequested { get; set; }
+    [Parameter] public EventCallback<int> OnDeleteRequested { get; set; }
+
+    private Task HandleRowClick(GridRowEventArgs<PropertyType> args) =>
+        OnPropertyTypeSelected.InvokeAsync(args.Item.Id);
+
+    private string GetRowClass(PropertyType propertyType) =>
+        SelectedPropertyTypeId == propertyType.Id ? "table-active" : string.Empty;
+}
