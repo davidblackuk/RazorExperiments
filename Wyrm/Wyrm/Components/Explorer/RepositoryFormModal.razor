@@ -1,39 +1,39 @@
-<div class="modal d-block explorer-modal-backdrop" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">New Repository</h5>
-                <button type="button" class="btn-close" @onclick="() => OnCancel.InvokeAsync()"></button>
-            </div>
-            <div class="modal-body">
-                @if (_error != null)
-                {
-                    <div class="alert alert-danger">@_error</div>
-                }
-                <div class="form-group mb-3">
-                    <label class="control-label">Name</label>
-                    <input class="form-control" @bind="_name" @bind:event="oninput" />
-                </div>
-                <div class="form-group mb-3">
-                    <label class="control-label">Description</label>
-                    <textarea class="form-control" rows="4" @bind="_description" @bind:event="oninput"></textarea>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-sm" @onclick="() => OnCancel.InvokeAsync()">Cancel</button>
-                <button type="button" class="btn btn-primary btn-sm" @onclick="Save">Save</button>
-            </div>
+<Modal @ref="_modal" Title="New Repository" UseStaticBackdrop="true">
+    <BodyTemplate>
+        @if (_error != null)
+        {
+            <Alert Color="AlertColor.Danger">@_error</Alert>
+        }
+        <div class="form-group mb-3">
+            <label class="control-label">Name</label>
+            <input class="form-control" @bind="_name" @bind:event="oninput" />
         </div>
-    </div>
-</div>
+        <div class="form-group mb-3">
+            <label class="control-label">Description</label>
+            <textarea class="form-control" rows="4" @bind="_description" @bind:event="oninput"></textarea>
+        </div>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" Size="ButtonSize.Small" @onclick="() => _modal!.HideAsync()">Cancel</Button>
+        <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="Save">Save</Button>
+    </FooterTemplate>
+</Modal>
 
 @code {
     [Parameter] public EventCallback<RepositoryFormInput> OnSave { get; set; }
-    [Parameter] public EventCallback OnCancel { get; set; }
 
+    private Modal? _modal;
     private string _name = string.Empty;
     private string _description = string.Empty;
     private string? _error;
+
+    public Task ShowAsync()
+    {
+        _name = string.Empty;
+        _description = string.Empty;
+        _error = null;
+        return _modal?.ShowAsync() ?? Task.CompletedTask;
+    }
 
     private async Task Save()
     {
@@ -45,5 +45,10 @@
 
         _error = null;
         await OnSave.InvokeAsync(new RepositoryFormInput { Name = _name.Trim(), Description = _description.Trim() });
+
+        if (_modal != null)
+        {
+            await _modal.HideAsync();
+        }
     }
 }

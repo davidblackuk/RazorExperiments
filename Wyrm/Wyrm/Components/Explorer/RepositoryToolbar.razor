@@ -1,12 +1,12 @@
 <div class="explorer-pane-header d-flex justify-content-between align-items-center">
     <span><i class="fa-solid fa-compass me-1"></i> Repositories</span>
     <div>
-        <button type="button" class="btn btn-light btn-sm" title="Add Repository" @onclick="() => OnAddRequested.InvokeAsync()">
+        <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Add Repository" @onclick="() => OnAddRequested.InvokeAsync()">
             <i class="fa-solid fa-plus"></i>
-        </button>
-        <button type="button" class="btn btn-light btn-sm" title="Delete Repository" disabled="@(!CanDelete)" @onclick="() => OnDeleteRequested.InvokeAsync()">
+        </Button>
+        <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Delete Repository" Disabled="@(!CanDelete)" @onclick="() => OnDeleteRequested.InvokeAsync()">
             <i class="fa-solid fa-trash"></i>
-        </button>
+        </Button>
     </div>
 </div>
 

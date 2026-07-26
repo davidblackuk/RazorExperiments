@@ -24,10 +24,9 @@
                 <RepositoryToolbar CanDelete="_selectedRepositoryId.HasValue" OnAddRequested="OpenCreateRepositoryForm" OnDeleteRequested="OpenDeleteRepositoryConfirm" />
                 @if (_repositoryError != null)
                 {
-                    <div class="alert alert-danger alert-dismissible m-2 py-1 px-2">
+                    <Alert Color="AlertColor.Danger" Dismissable="true" OnClosed="() => _repositoryError = null" Class="m-2 py-1 px-2">
                         @_repositoryError
-                        <button type="button" class="btn-close" @onclick="() => _repositoryError = null"></button>
-                    </div>
+                    </Alert>
                 }
                 <RepositoryTree Repositories="_repositories" SelectedObjectTypeId="_selectedObjectType?.Id" OnObjectTypeSelected="SelectObjectTypeAsync"
                                 SelectedRepositoryId="_selectedRepositoryId" OnRepositorySelected="SelectRepository" />
@@ -53,36 +52,19 @@
     </div>
 </div>
 
-@if (_formMode != FormMode.None)
-{
-    <InstanceFormModal Title="@_formTitle" Fields="_formFields" OnSave="SaveFormAsync" OnCancel="CloseForm" />
-}
-
-@if (_deleteTargetId.HasValue)
-{
-    <DeleteConfirmModal DisplayName="@_deleteTargetDisplayName" OnConfirm="ConfirmDeleteAsync" OnCancel="CancelDelete" />
-}
-
-@if (_showCreateRepositoryForm)
-{
-    <RepositoryFormModal OnSave="SaveRepositoryAsync" OnCancel="CloseCreateRepositoryForm" />
-}
-
-@if (_deleteRepositoryId.HasValue)
-{
-    <DeleteConfirmModal DisplayName="@_deleteRepositoryDisplayName" OnConfirm="ConfirmDeleteRepositoryAsync" OnCancel="CancelDeleteRepository" />
-}
+<InstanceFormModal @ref="_instanceFormModal" OnSave="SaveFormAsync" />
+<RepositoryFormModal @ref="_repositoryFormModal" OnSave="SaveRepositoryAsync" />
+<ConfirmDialog @ref="_confirmDialog" />
 
 @code {
-    private enum FormMode { None, Create, Edit }
+    private enum FormMode { Create, Edit }
 
     private List<Repository> _repositories = new();
 
     private int? _selectedRepositoryId;
-    private bool _showCreateRepositoryForm;
-    private int? _deleteRepositoryId;
-    private string _deleteRepositoryDisplayName = string.Empty;
     private string? _repositoryError;
+    private RepositoryFormModal? _repositoryFormModal;
+    private ConfirmDialog? _confirmDialog;
 
     private ObjectType? _selectedObjectType;
     private List<ExplorerInstanceRow>? _rows;
@@ -92,13 +74,9 @@
     private ExplorerInstanceDetailViewModel? _selectedInstanceDetail;
     private bool _detailLoading;
 
-    private FormMode _formMode = FormMode.None;
-    private string _formTitle = string.Empty;
-    private List<PropertyFieldInput> _formFields = new();
+    private InstanceFormModal? _instanceFormModal;
+    private FormMode _formMode;
     private int? _editingInstanceId;
-
-    private int? _deleteTargetId;
-    private string _deleteTargetDisplayName = string.Empty;
 
     [CascadingParameter]
     private Task<AuthenticationState>? AuthStateTask { get; set; }
@@ -187,23 +165,29 @@
         _detailLoading = false;
     }
 
-    private void OpenCreateForm()
+    private Task OpenCreateForm()
     {
-        if (_selectedObjectType == null)
+        if (_selectedObjectType == null || _instanceFormModal == null)
         {
-            return;
+            return Task.CompletedTask;
         }
 
         _formMode = FormMode.Create;
         _editingInstanceId = null;
-        _formTitle = $"New {_selectedObjectType.Name}";
-        _formFields = EditableFields(_selectedObjectType.PropertyTypes)
+        var fields = EditableFields(_selectedObjectType.PropertyTypes)
             .Select(pt => new PropertyFieldInput { PropertyTypeId = pt.Id, Name = pt.Name, Description = pt.Description, DataType = pt.DataType, RawValue = null })
             .ToList();
+
+        return _instanceFormModal.ShowAsync($"New {_selectedObjectType.Name}", fields);
     }
 
     private async Task OpenEditFormAsync(int instanceId)
     {
+        if (_instanceFormModal == null)
+        {
+            return;
+        }
+
         await using var context = await DbContextFactory.CreateDbContextAsync();
         var instance = await context.ObjectInstances
             .Include(i => i.ObjectType!.PropertyTypes.OrderBy(pt => pt.Id))
@@ -215,10 +199,11 @@
 
         _formMode = FormMode.Edit;
         _editingInstanceId = instanceId;
-        _formTitle = $"Edit {displayName}";
-        _formFields = editable
+        var fields = editable
             .Select(pt => new PropertyFieldInput { PropertyTypeId = pt.Id, Name = pt.Name, Description = pt.Description, DataType = pt.DataType, RawValue = existingValues.GetValueOrDefault(pt.Id) })
             .ToList();
+
+        await _instanceFormModal.ShowAsync($"Edit {displayName}", fields);
     }
 
     private Task OpenEditFormForRowAsync(int instanceId) => OpenEditFormAsync(instanceId);
@@ -226,16 +211,9 @@
     private Task OpenEditFormForSelectedAsync() =>
         _selectedInstance != null ? OpenEditFormAsync(_selectedInstance.Id) : Task.CompletedTask;
 
-    private void CloseForm()
-    {
-        _formMode = FormMode.None;
-        _formFields = new List<PropertyFieldInput>();
-        _editingInstanceId = null;
-    }
-
     private async Task SaveFormAsync()
     {
-        if (_selectedObjectType == null)
+        if (_selectedObjectType == null || _instanceFormModal == null)
         {
             return;
         }
@@ -283,7 +261,6 @@
             return;
         }
 
-        CloseForm();
         await SelectObjectTypeAsync(_selectedObjectType);
         await SelectInstanceAsync(savedInstanceId);
     }
@@ -293,7 +270,7 @@
         var propertyTypeList = propertyTypes.ToList();
         var editable = EditableFields(propertyTypeList);
 
-        foreach (var field in _formFields)
+        foreach (var field in _instanceFormModal!.CurrentFields)
         {
             var propertyType = editable.First(pt => pt.Id == field.PropertyTypeId);
             await PropertyValueStore.SetValueAsync(context, instance, propertyType, field.RawValue, userId, now);
@@ -304,50 +281,44 @@
         await context.SaveChangesAsync();
     }
 
-    private void OpenDeleteConfirmForRow(int instanceId)
+    private Task OpenDeleteConfirmForRow(int instanceId)
     {
         var row = _rows?.FirstOrDefault(r => r.Id == instanceId);
-        _deleteTargetId = instanceId;
-        _deleteTargetDisplayName = row?.DisplayName ?? $"Instance #{instanceId}";
+        return DeleteInstanceAsync(instanceId, row?.DisplayName ?? $"Instance #{instanceId}");
     }
 
-    private void OpenDeleteConfirmForSelected()
+    private Task OpenDeleteConfirmForSelected() =>
+        _selectedInstanceDetail != null
+            ? DeleteInstanceAsync(_selectedInstanceDetail.ObjectInstance.Id, _selectedInstanceDetail.DisplayName)
+            : Task.CompletedTask;
+
+    private async Task DeleteInstanceAsync(int instanceId, string displayName)
     {
-        if (_selectedInstanceDetail == null)
+        if (_confirmDialog == null || _selectedObjectType == null)
         {
             return;
         }
 
-        _deleteTargetId = _selectedInstanceDetail.ObjectInstance.Id;
-        _deleteTargetDisplayName = _selectedInstanceDetail.DisplayName;
-    }
+        var confirmed = await _confirmDialog.ShowAsync(
+            title: $"Delete: {displayName}",
+            message1: $"Are you sure you want to delete {displayName}?",
+            message2: "Deleting this instance will delete all of its property values. There is no undo operation for this action.",
+            confirmDialogOptions: new ConfirmDialogOptions { YesButtonText = "Delete", YesButtonColor = ButtonColor.Danger });
 
-    private void CancelDelete()
-    {
-        _deleteTargetId = null;
-        _deleteTargetDisplayName = string.Empty;
-    }
-
-    private async Task ConfirmDeleteAsync()
-    {
-        if (!_deleteTargetId.HasValue || _selectedObjectType == null)
+        if (!confirmed)
         {
             return;
         }
-
-        var deletedId = _deleteTargetId.Value;
 
         await using var context = await DbContextFactory.CreateDbContextAsync();
-        var instance = await context.ObjectInstances.FindAsync(deletedId);
+        var instance = await context.ObjectInstances.FindAsync(instanceId);
         if (instance != null)
         {
             context.ObjectInstances.Remove(instance);
             await context.SaveChangesAsync();
         }
 
-        CancelDelete();
-
-        if (_selectedInstance?.Id == deletedId)
+        if (_selectedInstance?.Id == instanceId)
         {
             _selectedInstance = null;
             _selectedInstanceDetail = null;
@@ -361,9 +332,8 @@
         _selectedRepositoryId = repository.Id;
     }
 
-    private void OpenCreateRepositoryForm() => _showCreateRepositoryForm = true;
-
-    private void CloseCreateRepositoryForm() => _showCreateRepositoryForm = false;
+    private Task OpenCreateRepositoryForm() =>
+        _repositoryFormModal?.ShowAsync() ?? Task.CompletedTask;
 
     private async Task SaveRepositoryAsync(RepositoryFormInput input)
     {
@@ -382,66 +352,54 @@
         });
         await context.SaveChangesAsync();
 
-        CloseCreateRepositoryForm();
         await ReloadRepositoriesAsync();
     }
 
-    private void OpenDeleteRepositoryConfirm()
+    private async Task OpenDeleteRepositoryConfirm()
     {
         var repository = _selectedRepositoryId.HasValue
             ? _repositories.FirstOrDefault(r => r.Id == _selectedRepositoryId.Value)
             : null;
 
-        if (repository == null)
+        if (repository == null || _confirmDialog == null)
         {
             return;
         }
 
-        _deleteRepositoryId = repository.Id;
-        _deleteRepositoryDisplayName = repository.Name;
-    }
+        var confirmed = await _confirmDialog.ShowAsync(
+            title: $"Delete: {repository.Name}",
+            message1: $"Are you sure you want to delete the repository '{repository.Name}'?",
+            message2: "This is only allowed while the repository has no object types.",
+            confirmDialogOptions: new ConfirmDialogOptions { YesButtonText = "Delete", YesButtonColor = ButtonColor.Danger });
 
-    private void CancelDeleteRepository()
-    {
-        _deleteRepositoryId = null;
-        _deleteRepositoryDisplayName = string.Empty;
-    }
-
-    private async Task ConfirmDeleteRepositoryAsync()
-    {
-        if (!_deleteRepositoryId.HasValue)
+        if (!confirmed)
         {
             return;
         }
-
-        var deletedId = _deleteRepositoryId.Value;
 
         await using var context = await DbContextFactory.CreateDbContextAsync();
-        var repository = await context.Repositories
+        var toDelete = await context.Repositories
             .Include(r => r.ObjectTypes)
-            .FirstOrDefaultAsync(r => r.Id == deletedId);
+            .FirstOrDefaultAsync(r => r.Id == repository.Id);
 
-        if (repository != null)
+        if (toDelete != null)
         {
-            if (repository.ObjectTypes.Any())
+            if (toDelete.ObjectTypes.Any())
             {
-                CancelDeleteRepository();
-                _repositoryError = $"Cannot delete '{repository.Name}' because it still contains object types.";
+                _repositoryError = $"Cannot delete '{toDelete.Name}' because it still contains object types.";
                 return;
             }
 
-            context.Repositories.Remove(repository);
+            context.Repositories.Remove(toDelete);
             await context.SaveChangesAsync();
         }
 
-        CancelDeleteRepository();
-
-        if (_selectedRepositoryId == deletedId)
+        if (_selectedRepositoryId == repository.Id)
         {
             _selectedRepositoryId = null;
         }
 
-        if (_selectedObjectType?.RepositoryId == deletedId)
+        if (_selectedObjectType?.RepositoryId == repository.Id)
         {
             _selectedObjectType = null;
             _rows = null;

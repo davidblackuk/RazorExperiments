@@ -30,6 +30,7 @@ builder.Services.AddRazorPages(options =>
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddBlazorBootstrap();
 
 var app = builder.Build();
 
