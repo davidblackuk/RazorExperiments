@@ -34,6 +34,15 @@
     cursor: pointer;
 }
 
+.explorer-tree-node i {
+    color: var(--sapphire-sky);
+}
+
+.explorer-pane-header .btn i,
+.explorer-pane-title .btn i {
+    color: var(--sapphire-sky);
+}
+
 .explorer-tree-node:hover {
     background-color: rgba(0, 0, 0, 0.05);
 }
