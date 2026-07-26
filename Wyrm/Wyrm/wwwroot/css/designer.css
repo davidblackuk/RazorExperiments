@@ -33,6 +33,10 @@
     white-space: nowrap;
 }
 
+.no-caret.dropdown-toggle::after {
+    display: none !important;
+}
+
 .designer-tree-node-actions .btn i {
     color: var(--sapphire-sky);
 }

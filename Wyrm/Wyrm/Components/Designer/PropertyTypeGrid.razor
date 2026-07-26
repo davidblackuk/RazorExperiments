@@ -35,8 +35,19 @@
                         @if (!context.IsSystemProperty)
                         {
                             <span @onclick:stopPropagation="true">
-                                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="() => OnEditRequested.InvokeAsync(context.Id)">Edit</Button>
-                                <Button Color="ButtonColor.Link" Size="ButtonSize.Small" @onclick="() => OnDeleteRequested.InvokeAsync(context.Id)">Delete</Button>
+                                <Dropdown>
+                                    <DropdownToggleButton Color="DropdownColor.Light" Size="DropdownSize.Small" Class="no-caret" title="Actions">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </DropdownToggleButton>
+                                    <DropdownMenu>
+                                        <DropdownItem @onclick="() => OnEditRequested.InvokeAsync(context.Id)">
+                                            <i class="fa-solid fa-pen me-2"></i>Edit
+                                        </DropdownItem>
+                                        <DropdownItem @onclick="() => OnDeleteRequested.InvokeAsync(context.Id)">
+                                            <i class="fa-solid fa-trash me-2"></i>Delete
+                                        </DropdownItem>
+                                    </DropdownMenu>
+                                </Dropdown>
                             </span>
                         }
                     </GridColumn>
