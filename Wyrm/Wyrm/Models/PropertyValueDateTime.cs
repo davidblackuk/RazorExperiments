@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Wyrm.Abstractions;
 
 namespace Wyrm.Models
 {
@@ -7,7 +8,7 @@ namespace Wyrm.Models
     /// on a given <see cref="ObjectInstance"/>. A row's existence means the instance
     /// has a value set for that property; there is no null-value row.
     /// </summary>
-    public class PropertyValueDateTime
+    public class PropertyValueDateTime: IAuditModifications   
     {
         /// <summary>
         /// Gets or sets the unique identifier for this property value.

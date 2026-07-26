@@ -1,14 +1,16 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
+using Wyrm.Abstractions;
 
 namespace Wyrm.Models
 {
+
     /// <summary>
     /// Represents a type of object within a repository that defines the structure and metadata for objects.
     /// Includes audit tracking for creation and modification and most importantly , a collection of associated 
     /// property types that define the attributes of objects of this type.
     /// </summary>
-    public class ObjectType
+    public class ObjectType : IAuditModifications   
     {
         /// <summary>
         /// Gets or sets the unique identifier for this object type.

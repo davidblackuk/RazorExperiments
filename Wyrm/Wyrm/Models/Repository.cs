@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.Runtime.InteropServices;
+using Wyrm.Abstractions;
 
 namespace Wyrm.Models
 {
     /// <summary>
     /// Represents a repository entity that contains object types and their associated metadata.
     /// </summary>
-    public class Repository
+    public class Repository: IAuditModifications   
     {
         /// <summary>
         /// Gets or sets the unique identifier for the repository.

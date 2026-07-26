@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Wyrm.Abstractions;
 
 namespace Wyrm.Models
 {
@@ -6,7 +7,7 @@ namespace Wyrm.Models
     /// Represents a property type definition that describes an attribute that can be associated with an object type.
     /// Includes the property's data type, metadata, and audit tracking for creation and modification.
     /// </summary>
-    public class PropertyType
+    public class PropertyType: IAuditModifications   
     {
         /// <summary>
         /// Gets or sets the unique identifier for this property type.

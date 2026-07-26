@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Wyrm.Abstractions;
 
 namespace Wyrm.Models
 {
@@ -7,7 +8,7 @@ namespace Wyrm.Models
     /// Includes audit tracking for creation and modification and a collection of
     /// property values (split by value type) that hold the instance's actual data.
     /// </summary>
-    public class ObjectInstance
+    public class ObjectInstance: IAuditModifications   
     {
         /// <summary>
         /// Gets or sets the unique identifier for this object instance.
