@@ -47,6 +47,11 @@
     font-weight: 600;
 }
 
+.explorer-tree-repo-node.active {
+    background-color: var(--pale-sky);
+    font-weight: 600;
+}
+
 .explorer-tree-caret {
     display: inline-block;
     width: 0.9rem;

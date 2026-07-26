@@ -1,0 +1,17 @@
+<div class="explorer-pane-header d-flex justify-content-between align-items-center">
+    <span><i class="fa-solid fa-compass me-1"></i> Repositories</span>
+    <div>
+        <button type="button" class="btn btn-light btn-sm" title="Add Repository" @onclick="() => OnAddRequested.InvokeAsync()">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+        <button type="button" class="btn btn-light btn-sm" title="Delete Repository" disabled="@(!CanDelete)" @onclick="() => OnDeleteRequested.InvokeAsync()">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </div>
+</div>
+
+@code {
+    [Parameter] public bool CanDelete { get; set; }
+    [Parameter] public EventCallback OnAddRequested { get; set; }
+    [Parameter] public EventCallback OnDeleteRequested { get; set; }
+}

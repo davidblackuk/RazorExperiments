@@ -1,4 +1,3 @@
-<div class="explorer-pane-header"><i class="fa-solid fa-compass me-1"></i> Repositories</div>
 <div class="explorer-tree">
     @if (!Repositories.Any())
     {
@@ -10,8 +9,8 @@
             @foreach (var repository in Repositories.OrderBy(r => r.Name))
             {
                 <li>
-                    <div class="explorer-tree-node explorer-tree-repo-node @(IsCollapsed(repository.Id) ? "" : "explorer-tree-expanded")"
-                         @onclick="() => ToggleRepository(repository.Id)">
+                    <div class="explorer-tree-node explorer-tree-repo-node @(IsCollapsed(repository.Id) ? "" : "explorer-tree-expanded") @(SelectedRepositoryId == repository.Id ? "active" : "")"
+                         @onclick="() => SelectRepository(repository)">
                         <i class="fa-solid fa-chevron-right explorer-tree-caret"></i>
                         <i class="fa-solid fa-database me-1"></i> @repository.Name
                     </div>
@@ -43,6 +42,8 @@
     [Parameter, EditorRequired] public required List<Repository> Repositories { get; set; }
     [Parameter] public int? SelectedObjectTypeId { get; set; }
     [Parameter] public EventCallback<ObjectType> OnObjectTypeSelected { get; set; }
+    [Parameter] public int? SelectedRepositoryId { get; set; }
+    [Parameter] public EventCallback<Repository> OnRepositorySelected { get; set; }
 
     private readonly HashSet<int> _collapsedRepositoryIds = new();
 
@@ -52,6 +53,12 @@
         {
             _collapsedRepositoryIds.Remove(repositoryId);
         }
+    }
+
+    private async Task SelectRepository(Repository repository)
+    {
+        ToggleRepository(repository.Id);
+        await OnRepositorySelected.InvokeAsync(repository);
     }
 
     private bool IsCollapsed(int repositoryId) => _collapsedRepositoryIds.Contains(repositoryId);
