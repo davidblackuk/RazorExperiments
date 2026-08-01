@@ -5,6 +5,10 @@
 /Wyrm/Wyrm/bin/Debug/net10.0
 /Wyrm/Wyrm/obj/Debug/net10.0
 /Wyrm/Wyrm/obj
+/Wyrm/Wyrm.DAL/bin
+/Wyrm/Wyrm.DAL/obj
+/Wyrm/Wyrm.Services/bin
+/Wyrm/Wyrm.Services/obj
 /.vs
 /Wyrm/.vs
 /Wyrm/Wyrm/*.db

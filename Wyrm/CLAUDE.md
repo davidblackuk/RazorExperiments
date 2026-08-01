@@ -4,35 +4,42 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-Wyrm is an ASP.NET Core (.NET 10) application for designing and browsing a schema of "repositories" containing "object types," which in turn contain "property types." Both the schema-design UI ("Designer") and the browsing/data-entry UI ("Explorer") are Blazor Web App components (Interactive Server render mode) built with BlazorBootstrap, living alongside a small remaining set of Razor Pages (home page, ASP.NET Core Identity's scaffolded account pages) in the same project. It uses ASP.NET Core Identity for auth and EF Core with SQLite for persistence. There is no separate solution-wide test project.
+Wyrm is an ASP.NET Core (.NET 10) application for designing and browsing a schema of "repositories" containing "object types," which in turn contain "property types." Both the schema-design UI ("Designer") and the browsing/data-entry UI ("Explorer") are Blazor Web App components (Interactive Server render mode) built with BlazorBootstrap, living alongside a small remaining set of Razor Pages (home page, ASP.NET Core Identity's scaffolded account pages). It uses ASP.NET Core Identity for auth and EF Core with SQLite for persistence. There is no separate solution-wide test project.
 
-The repo root for the app is `Wyrm/Wyrm` (the `.slnx` solution file lives one level up in `Wyrm/`).
+The repo root is `Wyrm/` (the `.slnx` solution file, this `CLAUDE.md`, and `.vscode/` all live here), containing three projects:
+
+- **`Wyrm.DAL/`** — class library: domain models, `ApplicationDbContext`, and EF Core migrations. Namespaces `Wyrm.Models`, `Wyrm.Data`, `Wyrm.Abstractions`.
+- **`Wyrm.Services/`** — class library: stateless service helpers used by the UI. Namespace `Wyrm.Services`. Project-references `Wyrm.DAL`.
+- **`Wyrm/`** — the ASP.NET Core web project (`Wyrm.csproj`): `Program.cs`, Blazor `Components/`, Razor `Pages/`, `Areas/Identity/`, `ViewModels/`, `wwwroot/`. Project-references both `Wyrm.DAL` and `Wyrm.Services`.
+
+All three projects share the same root namespace (`Wyrm`) via an explicit `<RootNamespace>Wyrm</RootNamespace>` in `Wyrm.DAL.csproj`/`Wyrm.Services.csproj`, so folder-based sub-namespaces (`Wyrm.Models`, `Wyrm.Data`, `Wyrm.Services`, `Wyrm.Abstractions`) are identical to what they'd be in a single-project layout — code moved between these projects doesn't need its `namespace`/`using` statements touched, only its project.
 
 ## Commands
 
-Run all commands from `Wyrm/Wyrm/` (the project directory containing `Wyrm.csproj`).
+Run all commands from `Wyrm/` (the solution root, containing `Wyrm.slnx`).
 
-- Restore/build: `dotnet build`
-- Run the app: `dotnet run` (serves on `http://localhost:5114` and `https://localhost:7184`, per `Properties/launchSettings.json`)
-- Apply/update the database: `dotnet ef database update` (requires `dotnet-ef` tool; uses the `DefaultConnection` string in `appsettings.json`, a SQLite file `Wyrm.db` created in the project directory)
-- Add a new migration after model changes: `dotnet ef migrations add <Name>`
+- Restore/build: `dotnet build Wyrm.slnx`
+- Run the app: `dotnet run --project Wyrm/Wyrm.csproj` (serves on `http://localhost:5114` and `https://localhost:7184`, per `Wyrm/Properties/launchSettings.json`)
+- Apply/update the database: `dotnet ef database update --project Wyrm.DAL/Wyrm.DAL.csproj --startup-project Wyrm/Wyrm.csproj` (requires `dotnet-ef` tool; uses the `DefaultConnection` string in `Wyrm/appsettings.json`, a SQLite file `Wyrm.db` created in `Wyrm/`)
+- Add a new migration after model changes: `dotnet ef migrations add <Name> --project Wyrm.DAL/Wyrm.DAL.csproj --startup-project Wyrm/Wyrm.csproj`
+- `--project` points at `Wyrm.DAL` because that's where `ApplicationDbContext` and `Data/Migrations/` live; `--startup-project` points at `Wyrm` because that's where the DI container (connection string, `UseSqlite`) is configured, in `Program.cs`.
 - There are no automated tests in this repo currently.
 
 ## Architecture
 
 ### Domain model (hierarchical schema designer)
 
-The core domain is a three-level hierarchy defined in `Models/`:
+The core domain is a three-level hierarchy defined in `Wyrm.DAL/Models/`:
 
 - `Repository` — top-level container (`Models/Repository.cs`)
 - `ObjectType` — belongs to a `Repository`, defines a "type of object" (`Models/ObjectType.cs`)
 - `PropertyType` — belongs to an `ObjectType`, defines an attribute/field with a `PropertyDataType` (`Models/PropertyType.cs`, `Models/DataType.cs`: String, Memo, Int, Number, DateTime, Date)
 
-All three entities share the same audit pattern: `CreatedById`/`CreatedAt`/`UpdatedById`/`UpdatedAt` plus `CreatedBy`/`UpdatedBy` navigation properties to `IdentityUser`, and implement the marker interface `Abstractions/IAuditModifications.cs`. When adding CRUD for a new entity, follow this same audit pattern (see `Components/Pages/Designer.razor`'s `SaveRepositoryAsync`/`SaveObjectTypeAsync`/`SavePropertyTypeAsync` for the canonical example: resolve the current user id via a cascading `AuthenticationState`'s `ClaimTypes.NameIdentifier`, and stamp audit fields server-side before `SaveChangesAsync`).
+All three entities share the same audit pattern: `CreatedById`/`CreatedAt`/`UpdatedById`/`UpdatedAt` plus `CreatedBy`/`UpdatedBy` navigation properties to `IdentityUser`, and implement the marker interface `Wyrm.DAL/Abstractions/IAuditModifications.cs`. When adding CRUD for a new entity, follow this same audit pattern (see `Components/Pages/Designer.razor`'s `SaveRepositoryAsync`/`SaveObjectTypeAsync`/`SavePropertyTypeAsync` for the canonical example, in the `Wyrm` web project: resolve the current user id via a cascading `AuthenticationState`'s `ClaimTypes.NameIdentifier`, and stamp audit fields server-side before `SaveChangesAsync`).
 
-Every new `ObjectType` is auto-seeded with a fixed set of system `PropertyType`s (`IsSystemProperty = true`) built by `Services/ObjectTypeSystemProperties.cs`: `Name`, `Description`, `Category`, plus four "audit mirror" properties (`Who Created`, `When Created`, `Who Updated`, `When Updated` — named in `Services/SystemPropertyNames.cs`) whose values are stamped automatically from the owning `ObjectInstance`'s own audit fields rather than user-entered. `SystemPropertyNames.IsAuditMirror(name)` is what both Designer (hiding Edit/Delete for system properties) and Explorer (excluding them from the instance edit form) key off of.
+Every new `ObjectType` is auto-seeded with a fixed set of system `PropertyType`s (`IsSystemProperty = true`) built by `Wyrm.Services/ObjectTypeSystemProperties.cs`: `Name`, `Description`, `Category`, plus four "audit mirror" properties (`Who Created`, `When Created`, `Who Updated`, `When Updated` — named in `Wyrm.Services/SystemPropertyNames.cs`) whose values are stamped automatically from the owning `ObjectInstance`'s own audit fields rather than user-entered. `SystemPropertyNames.IsAuditMirror(name)` is what both Designer (hiding Edit/Delete for system properties) and Explorer (excluding them from the instance edit form) key off of.
 
-EF Core relationships and delete behavior are configured in `Data/ApplicationDbContext.cs` (`OnModelCreating`) — note the mix of `DeleteBehavior.Restrict`/`NoAction` on audit FKs (to avoid multiple cascade paths through `IdentityUser`) and `DeleteBehavior.Cascade` from `ObjectType` down to `PropertyType`. Migrations live in `Data/Migrations/`.
+EF Core relationships and delete behavior are configured in `Wyrm.DAL/Data/ApplicationDbContext.cs` (`OnModelCreating`) — note the mix of `DeleteBehavior.Restrict`/`NoAction` on audit FKs (to avoid multiple cascade paths through `IdentityUser`) and `DeleteBehavior.Cascade` from `ObjectType` down to `PropertyType`. Migrations live in `Wyrm.DAL/Data/Migrations/`.
 
 ### Pages vs. Areas vs. Components — UI surfaces over the same data
 
@@ -59,4 +66,4 @@ Identity is wired up in `Program.cs` with `RequireConfirmedAccount = true` and e
 
 ### Front-end
 
-Designer and Explorer (both `Components/`) are Blazor Interactive Server, styled with BlazorBootstrap (`Blazor.Bootstrap` NuGet package, registered via `AddBlazorBootstrap()` in `Program.cs`) on top of the same vendored Bootstrap (`wwwroot/lib/bootstrap`) and Font Awesome used elsewhere — no jquery-validation in either; field validation happens in component code (e.g. `InstanceFormModal.razor` via `Services/PropertyValueParser.cs`, or inline `Name is required` checks in the Designer form modals). The remaining Razor Pages surface (home page, `Areas/Identity/`) still uses jQuery + jquery-validation (vendored under `wwwroot/lib/`) for client-side validation. All surfaces share `wwwroot/css/site.css`/`glass.css`; Explorer additionally uses `wwwroot/css/explorer.css` and Designer additionally uses `wwwroot/css/designer.css` (tree node layout with per-node action buttons — distinct from Explorer's plain-text tree nodes). Font Awesome icon classes are used for iconography — see `Notes.md` for the icon-to-entity mapping convention (e.g. `fa-database` for Repository, `fa-cube` for Object types, `fa-diagram-project` for property types) to keep icon usage consistent when adding new schema-design UI.
+Designer and Explorer (both `Components/`) are Blazor Interactive Server, styled with BlazorBootstrap (`Blazor.Bootstrap` NuGet package, registered via `AddBlazorBootstrap()` in `Program.cs`) on top of the same vendored Bootstrap (`wwwroot/lib/bootstrap`) and Font Awesome used elsewhere — no jquery-validation in either; field validation happens in component code (e.g. `InstanceFormModal.razor` via `Wyrm.Services/PropertyValueParser.cs`, or inline `Name is required` checks in the Designer form modals). The remaining Razor Pages surface (home page, `Areas/Identity/`) still uses jQuery + jquery-validation (vendored under `wwwroot/lib/`) for client-side validation. All surfaces share `wwwroot/css/site.css`/`glass.css`; Explorer additionally uses `wwwroot/css/explorer.css` and Designer additionally uses `wwwroot/css/designer.css` (tree node layout with per-node action buttons — distinct from Explorer's plain-text tree nodes). Font Awesome icon classes are used for iconography — see `Notes.md` for the icon-to-entity mapping convention (e.g. `fa-database` for Repository, `fa-cube` for Object types, `fa-diagram-project` for property types) to keep icon usage consistent when adding new schema-design UI.

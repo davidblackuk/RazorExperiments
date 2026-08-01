@@ -18,7 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Services\" />
+    <ProjectReference Include="..\Wyrm.DAL\Wyrm.DAL.csproj" />
+    <ProjectReference Include="..\Wyrm.Services\Wyrm.Services.csproj" />
   </ItemGroup>
 
 </Project>

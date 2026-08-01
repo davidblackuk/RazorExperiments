@@ -1,3 +1,5 @@
 <Solution>
   <Project Path="Wyrm/Wyrm.csproj" />
+  <Project Path="Wyrm.DAL/Wyrm.DAL.csproj" />
+  <Project Path="Wyrm.Services/Wyrm.Services.csproj" />
 </Solution>
