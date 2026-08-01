@@ -1,0 +1,22 @@
+using BlazorBootstrap;
+using Microsoft.AspNetCore.Components;
+using Wyrm.Models;
+
+namespace Wyrm.Components.Designer;
+
+public partial class PropertyTypeGrid : ComponentBase
+{
+    [Parameter] public ObjectType? ObjectType { get; set; }
+    [Parameter] public List<PropertyType>? PropertyTypes { get; set; }
+    [Parameter] public bool IsLoading { get; set; }
+    [Parameter] public int? SelectedPropertyTypeId { get; set; }
+    [Parameter] public EventCallback<int> OnPropertyTypeSelected { get; set; }
+    [Parameter] public EventCallback<int> OnEditRequested { get; set; }
+    [Parameter] public EventCallback<int> OnDeleteRequested { get; set; }
+
+    private Task HandleRowClick(GridRowEventArgs<PropertyType> args) =>
+        OnPropertyTypeSelected.InvokeAsync(args.Item.Id);
+
+    private string GetRowClass(PropertyType propertyType) =>
+        SelectedPropertyTypeId == propertyType.Id ? "table-active" : string.Empty;
+}

@@ -27,9 +27,3 @@
             break;
     }
 </div>
-
-@code {
-    [Parameter, EditorRequired] public required PropertyFieldInput Field { get; set; }
-
-    private void OnInput(ChangeEventArgs e) => Field.RawValue = e.Value?.ToString();
-}

@@ -40,10 +40,3 @@
         </dl>
     }
 </div>
-
-@code {
-    [Parameter] public ExplorerInstanceDetailViewModel? Detail { get; set; }
-    [Parameter] public bool IsLoading { get; set; }
-    [Parameter] public EventCallback OnEditRequested { get; set; }
-    [Parameter] public EventCallback OnDeleteRequested { get; set; }
-}
