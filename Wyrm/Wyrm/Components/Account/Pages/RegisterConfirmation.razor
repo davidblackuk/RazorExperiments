@@ -1,0 +1,25 @@
+@page "/Account/RegisterConfirmation"
+@attribute [AllowAnonymous]
+@layout AuthLayout
+@inject UserManager<IdentityUser> UserManager
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Register confirmation - Wyrm</PageTitle>
+<h2 class="glass-text mb-0 text-center pb-3">Register confirmation</h2>
+
+@if (displayConfirmAccountLink)
+{
+    <p class="glass-text">
+        This app does not currently have a real email sender registered, see <a href="https://aka.ms/aspaccountconf">these docs</a> for how to configure a real email sender.
+        Normally this would be emailed: <a href="@emailConfirmationUrl">Click here to confirm your account</a>
+    </p>
+}
+else if (userNotFound)
+{
+    <p class="glass-text">Unable to load user with email '@Email'.</p>
+}
+else
+{
+    <p class="glass-text">Please check your email to confirm your account.</p>
+}

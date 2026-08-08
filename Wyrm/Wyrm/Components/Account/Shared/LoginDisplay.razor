@@ -1,0 +1,16 @@
+@inject NavigationManager NavigationManager
+
+<AuthorizeView>
+    <Authorized>
+        <span class="navbar-text text-light me-2">Hello @context.User.Identity?.Name!</span>
+        <form method="post" action="/Account/Logout" class="form-inline">
+            <AntiforgeryToken />
+            <input type="hidden" name="returnUrl" value="@currentPath" />
+            <button type="submit" class="nav-link btn btn-link text-light">Logout</button>
+        </form>
+    </Authorized>
+    <NotAuthorized>
+        <a class="nav-link text-light" href="/Account/Register">Register</a>
+        <a class="nav-link text-light" href="/Account/Login">Login</a>
+    </NotAuthorized>
+</AuthorizeView>

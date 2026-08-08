@@ -1,0 +1,12 @@
+using Microsoft.AspNetCore.Identity;
+
+namespace Wyrm.Components.Account;
+
+public sealed class IdentityNoOpEmailSender : IEmailSender<IdentityUser>
+{
+    public Task SendConfirmationLinkAsync(IdentityUser user, string email, string confirmationLink) => Task.CompletedTask;
+
+    public Task SendPasswordResetLinkAsync(IdentityUser user, string email, string resetLink) => Task.CompletedTask;
+
+    public Task SendPasswordResetCodeAsync(IdentityUser user, string email, string resetCode) => Task.CompletedTask;
+}

@@ -1,0 +1,14 @@
+@page "/Account/ConfirmEmail"
+@layout AuthLayout
+@inject UserManager<IdentityUser> UserManager
+@inject IdentityRedirectManager RedirectManager
+
+<PageTitle>Confirm email - Wyrm</PageTitle>
+<h2 class="glass-text mb-0 text-center pb-3">Confirm email</h2>
+
+@if (statusMessage is not null)
+{
+    <div class="alert alert-@(statusMessage.StartsWith("Error") ? "danger" : "success")" role="alert">
+        @statusMessage
+    </div>
+}

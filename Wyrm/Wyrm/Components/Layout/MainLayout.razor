@@ -13,11 +13,7 @@
                         <a class="nav-link text-light" href="/Explorer">Explorer</a>
                     </li>
                 </ul>
-                <AuthorizeView>
-                    <Authorized>
-                        <span class="navbar-text text-light me-2">Hello @context.User.Identity?.Name!</span>
-                    </Authorized>
-                </AuthorizeView>
+                <LoginDisplay />
             </div>
         </div>
     </nav>
