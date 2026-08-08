@@ -120,6 +120,11 @@
     min-height: 80px;
 }
 
+.explorer-top .explorer-pane-header,
+.explorer-bottom .explorer-pane-header {
+    margin: -0.75rem -1rem 0.75rem -1rem;
+}
+
 .explorer-instance-row {
     cursor: pointer;
 }
