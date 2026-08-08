@@ -2,13 +2,10 @@ using System.Security.Claims;
 using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using Wyrm.Components.Designer;
 using Wyrm.Components.Shared;
-using Wyrm.Data;
 using Wyrm.Models;
-using Wyrm.Services;
 using Wyrm.ViewModels;
 
 namespace Wyrm.Components.Pages;
@@ -58,11 +55,7 @@ public partial class Designer : ComponentBase
 
     private async Task ReloadRepositoriesAsync()
     {
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        _repositories = await context.Repositories
-            .Include(r => r.ObjectTypes)
-            .OrderBy(r => r.Name)
-            .ToListAsync();
+        _repositories = await RepositoryService.GetAllWithObjectTypesAsync();
     }
 
     // --- Repository ---
@@ -81,35 +74,7 @@ public partial class Designer : ComponentBase
     private async Task SaveRepositoryAsync(RepositoryFormInput input)
     {
         var userId = await GetUserIdAsync();
-        var now = DateTime.UtcNow;
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-
-        if (input.Id.HasValue)
-        {
-            var repository = await context.Repositories.FindAsync(input.Id.Value);
-            if (repository != null)
-            {
-                repository.Name = input.Name;
-                repository.Description = input.Description;
-                repository.UpdatedById = userId;
-                repository.UpdatedAt = now;
-                await context.SaveChangesAsync();
-            }
-        }
-        else
-        {
-            context.Repositories.Add(new Repository
-            {
-                Name = input.Name,
-                Description = input.Description,
-                CreatedById = userId,
-                CreatedAt = now,
-                UpdatedById = userId,
-                UpdatedAt = now
-            });
-            await context.SaveChangesAsync();
-        }
-
+        await RepositoryService.SaveAsync(input, userId);
         await ReloadRepositoriesAsync();
     }
 
@@ -131,21 +96,11 @@ public partial class Designer : ComponentBase
             return;
         }
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        var toDelete = await context.Repositories
-            .Include(r => r.ObjectTypes)
-            .FirstOrDefaultAsync(r => r.Id == repository.Id);
-
-        if (toDelete != null)
+        var result = await RepositoryService.DeleteAsync(repository.Id);
+        if (!result.Success)
         {
-            if (toDelete.ObjectTypes.Any())
-            {
-                _repositoryError = $"Cannot delete '{toDelete.Name}' because it still contains object types.";
-                return;
-            }
-
-            context.Repositories.Remove(toDelete);
-            await context.SaveChangesAsync();
+            _repositoryError = result.ErrorMessage;
+            return;
         }
 
         if (_selectedRepositoryId == repository.Id)
@@ -171,11 +126,7 @@ public partial class Designer : ComponentBase
         _gridLoading = true;
         StateHasChanged();
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        var loaded = await context.ObjectTypes
-            .Include(o => o.Repository)
-            .Include(o => o.PropertyTypes.OrderBy(pt => pt.Id))
-            .FirstAsync(o => o.Id == objectType.Id);
+        var loaded = await ObjectTypeService.GetForDesignerAsync(objectType.Id);
 
         _selectedObjectType = loaded;
         _propertyTypes = loaded.PropertyTypes.ToList();
@@ -197,37 +148,7 @@ public partial class Designer : ComponentBase
     private async Task SaveObjectTypeAsync(ObjectTypeFormInput input)
     {
         var userId = await GetUserIdAsync();
-        var now = DateTime.UtcNow;
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-
-        if (input.Id.HasValue)
-        {
-            var objectType = await context.ObjectTypes.FindAsync(input.Id.Value);
-            if (objectType != null)
-            {
-                objectType.Name = input.Name;
-                objectType.Description = input.Description;
-                objectType.UpdatedById = userId;
-                objectType.UpdatedAt = now;
-                await context.SaveChangesAsync();
-            }
-        }
-        else if (_newObjectTypeRepositoryId.HasValue)
-        {
-            var objectType = new ObjectType
-            {
-                Name = input.Name,
-                Description = input.Description,
-                RepositoryId = _newObjectTypeRepositoryId.Value,
-                CreatedById = userId,
-                CreatedAt = now,
-                UpdatedById = userId,
-                UpdatedAt = now,
-                PropertyTypes = ObjectTypeSystemProperties.CreateDefaults(userId, now)
-            };
-            context.ObjectTypes.Add(objectType);
-            await context.SaveChangesAsync();
-        }
+        await ObjectTypeService.SaveAsync(input, _newObjectTypeRepositoryId, userId);
 
         _newObjectTypeRepositoryId = null;
         await ReloadRepositoriesAsync();
@@ -256,13 +177,7 @@ public partial class Designer : ComponentBase
             return;
         }
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        var toDelete = await context.ObjectTypes.FindAsync(objectType.Id);
-        if (toDelete != null)
-        {
-            context.ObjectTypes.Remove(toDelete);
-            await context.SaveChangesAsync();
-        }
+        await ObjectTypeService.DeleteAsync(objectType.Id);
 
         if (_selectedObjectType?.Id == objectType.Id)
         {
@@ -281,11 +196,7 @@ public partial class Designer : ComponentBase
         _detailLoading = true;
         StateHasChanged();
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        _selectedPropertyType = await context.PropertyTypes
-            .Include(p => p.CreatedBy)
-            .Include(p => p.UpdatedBy)
-            .FirstAsync(p => p.Id == propertyTypeId);
+        _selectedPropertyType = await PropertyTypeService.GetWithAuditUsersAsync(propertyTypeId);
 
         _detailLoading = false;
     }
@@ -314,37 +225,7 @@ public partial class Designer : ComponentBase
     private async Task SavePropertyTypeAsync(PropertyTypeFormInput input)
     {
         var userId = await GetUserIdAsync();
-        var now = DateTime.UtcNow;
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-
-        if (input.Id.HasValue)
-        {
-            var propertyType = await context.PropertyTypes.FindAsync(input.Id.Value);
-            if (propertyType != null)
-            {
-                propertyType.Name = input.Name;
-                propertyType.Description = input.Description;
-                propertyType.DataType = input.DataType;
-                propertyType.UpdatedById = userId;
-                propertyType.UpdatedAt = now;
-                await context.SaveChangesAsync();
-            }
-        }
-        else if (_newPropertyTypeObjectTypeId.HasValue)
-        {
-            context.PropertyTypes.Add(new PropertyType
-            {
-                Name = input.Name,
-                Description = input.Description,
-                DataType = input.DataType,
-                ObjectTypeId = _newPropertyTypeObjectTypeId.Value,
-                CreatedById = userId,
-                CreatedAt = now,
-                UpdatedById = userId,
-                UpdatedAt = now
-            });
-            await context.SaveChangesAsync();
-        }
+        await PropertyTypeService.SaveAsync(input, _newPropertyTypeObjectTypeId, userId);
 
         _newPropertyTypeObjectTypeId = null;
 
@@ -386,13 +267,7 @@ public partial class Designer : ComponentBase
             return;
         }
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        var toDelete = await context.PropertyTypes.FindAsync(propertyType.Id);
-        if (toDelete != null)
-        {
-            context.PropertyTypes.Remove(toDelete);
-            await context.SaveChangesAsync();
-        }
+        await PropertyTypeService.DeleteAsync(propertyType.Id);
 
         if (_selectedPropertyType?.Id == propertyType.Id)
         {

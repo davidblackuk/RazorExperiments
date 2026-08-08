@@ -1,7 +1,8 @@
 @page "/Explorer"
 @attribute [Authorize]
 @rendermode InteractiveServer
-@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject IRepositoryService RepositoryService
+@inject IObjectInstanceService ObjectInstanceService
 @inject IJSRuntime JS
 
 <PageTitle>Explorer</PageTitle>

@@ -4,13 +4,9 @@ using Wyrm.Models;
 
 namespace Wyrm.Services
 {
-    /// <summary>
-    /// Resolves the display label for an ObjectInstance from its "Name" system property value,
-    /// falling back to "Instance #{Id}" if that value is absent or blank.
-    /// </summary>
-    public static class InstanceDisplayHelper
+    public class InstanceDisplayHelper : IInstanceDisplayHelper
     {
-        public static async Task<string> GetDisplayNameAsync(ApplicationDbContext context, ObjectInstance instance)
+        public async Task<string> GetDisplayNameAsync(ApplicationDbContext context, ObjectInstance instance)
         {
             var nameValue = await context.PropertyValueStrings
                 .Where(v => v.ObjectInstanceId == instance.Id && v.PropertyType!.Name == "Name")
@@ -20,10 +16,7 @@ namespace Wyrm.Services
             return string.IsNullOrWhiteSpace(nameValue) ? $"Instance #{instance.Id}" : nameValue;
         }
 
-        /// <summary>
-        /// Bulk variant for a list of instances that all conform to the same ObjectType, avoiding one query per row.
-        /// </summary>
-        public static async Task<Dictionary<int, string>> GetDisplayNamesAsync(ApplicationDbContext context, int objectTypeId, IEnumerable<int> objectInstanceIds)
+        public async Task<Dictionary<int, string>> GetDisplayNamesAsync(ApplicationDbContext context, int objectTypeId, IEnumerable<int> objectInstanceIds)
         {
             var instanceIds = objectInstanceIds.ToList();
             var result = instanceIds.ToDictionary(id => id, id => $"Instance #{id}");

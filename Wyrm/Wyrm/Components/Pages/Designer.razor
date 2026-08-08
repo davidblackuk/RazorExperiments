@@ -1,7 +1,9 @@
 @page "/Designer"
 @attribute [Authorize]
 @rendermode InteractiveServer
-@inject IDbContextFactory<ApplicationDbContext> DbContextFactory
+@inject IRepositoryService RepositoryService
+@inject IObjectTypeService ObjectTypeService
+@inject IPropertyTypeService PropertyTypeService
 @inject IJSRuntime JS
 
 <PageTitle>Designer</PageTitle>

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Wyrm.Components;
 using Wyrm.Components.Account;
+using Wyrm.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,6 +32,13 @@ builder.Services.AddIdentityCore<IdentityUser>(options => options.SignIn.Require
     .AddDefaultTokenProviders();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<IEmailSender<IdentityUser>, IdentityNoOpEmailSender>();
+
+builder.Services.AddScoped<IInstanceDisplayHelper, InstanceDisplayHelper>();
+builder.Services.AddScoped<IPropertyValueStore, PropertyValueStore>();
+builder.Services.AddScoped<IRepositoryService, RepositoryService>();
+builder.Services.AddScoped<IObjectTypeService, ObjectTypeService>();
+builder.Services.AddScoped<IPropertyTypeService, PropertyTypeService>();
+builder.Services.AddScoped<IObjectInstanceService, ObjectInstanceService>();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()

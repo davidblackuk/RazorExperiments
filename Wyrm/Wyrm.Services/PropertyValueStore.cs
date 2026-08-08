@@ -10,13 +10,13 @@ namespace Wyrm.Services
     /// (PropertyValueStrings/Ints/Numbers/DateTimes) based on a PropertyType's DataType,
     /// so page code doesn't need to repeat that branch.
     /// </summary>
-    public static class PropertyValueStore
+    public class PropertyValueStore : IPropertyValueStore
     {
         /// <summary>
         /// Loads the existing values for an object instance as a flat PropertyTypeId -> display/edit string map.
         /// A missing key means no value has been recorded for that property yet.
         /// </summary>
-        public static async Task<Dictionary<int, string?>> LoadRawValuesAsync(ApplicationDbContext context, int objectInstanceId, IEnumerable<PropertyType> propertyTypes)
+        public async Task<Dictionary<int, string?>> LoadRawValuesAsync(ApplicationDbContext context, int objectInstanceId, IEnumerable<PropertyType> propertyTypes)
         {
             var propertyTypeList = propertyTypes.ToList();
             var result = new Dictionary<int, string?>();
@@ -56,7 +56,7 @@ namespace Wyrm.Services
         /// <see cref="SystemPropertyNames"/>) from the instance's own audit fields, rather than from
         /// user input. "Who/When Created" are only stamped on create, so they stay fixed afterwards.
         /// </summary>
-        public static async Task SetAuditMirrorValuesAsync(ApplicationDbContext context, ObjectInstance instance, IEnumerable<PropertyType> propertyTypes, string userName, string userId, DateTime now, bool isCreate)
+        public async Task SetAuditMirrorValuesAsync(ApplicationDbContext context, ObjectInstance instance, IEnumerable<PropertyType> propertyTypes, string userName, string userId, DateTime now, bool isCreate)
         {
             var whenText = now.ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
 
@@ -85,7 +85,7 @@ namespace Wyrm.Services
         /// A blank rawValue removes any existing row. The caller must have already validated rawValue
         /// with <see cref="PropertyValueParser.TryValidate"/>.
         /// </summary>
-        public static async Task SetValueAsync(ApplicationDbContext context, ObjectInstance instance, PropertyType propertyType, string? rawValue, string userId, DateTime now)
+        public async Task SetValueAsync(ApplicationDbContext context, ObjectInstance instance, PropertyType propertyType, string? rawValue, string userId, DateTime now)
         {
             switch (propertyType.DataType)
             {

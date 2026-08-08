@@ -2,11 +2,9 @@ using System.Security.Claims;
 using BlazorBootstrap;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.JSInterop;
 using Wyrm.Components.Explorer;
 using Wyrm.Components.Shared;
-using Wyrm.Data;
 using Wyrm.Models;
 using Wyrm.Services;
 using Wyrm.ViewModels;
@@ -41,11 +39,7 @@ public partial class Explorer : ComponentBase
 
     protected override async Task OnInitializedAsync()
     {
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        _repositories = await context.Repositories
-            .Include(r => r.ObjectTypes)
-            .OrderBy(r => r.Name)
-            .ToListAsync();
+        await ReloadRepositoriesAsync();
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -63,9 +57,6 @@ public partial class Explorer : ComponentBase
             ?? throw new InvalidOperationException("User id claim missing.");
     }
 
-    private static List<PropertyType> EditableFields(IEnumerable<PropertyType> propertyTypes) =>
-        propertyTypes.Where(pt => !SystemPropertyNames.IsAuditMirror(pt.Name)).ToList();
-
     private async Task SelectObjectTypeAsync(ObjectType objectType)
     {
         _selectedInstance = null;
@@ -73,27 +64,10 @@ public partial class Explorer : ComponentBase
         _gridLoading = true;
         StateHasChanged();
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        var loaded = await context.ObjectTypes
-            .Include(o => o.Repository)
-            .Include(o => o.PropertyTypes.OrderBy(pt => pt.Id))
-            .Include(o => o.ObjectInstances).ThenInclude(i => i.CreatedBy)
-            .Include(o => o.ObjectInstances).ThenInclude(i => i.UpdatedBy)
-            .FirstAsync(o => o.Id == objectType.Id);
+        var view = await ObjectInstanceService.GetRowsForObjectTypeAsync(objectType.Id);
 
-        var displayNames = await InstanceDisplayHelper.GetDisplayNamesAsync(context, loaded.Id, loaded.ObjectInstances.Select(i => i.Id));
-
-        _selectedObjectType = loaded;
-        _rows = loaded.ObjectInstances
-            .Select(i => new ExplorerInstanceRow
-            {
-                Id = i.Id,
-                DisplayName = displayNames[i.Id],
-                CreatedByUserName = i.CreatedBy?.UserName,
-                UpdatedByUserName = i.UpdatedBy?.UserName
-            })
-            .OrderBy(r => r.DisplayName)
-            .ToList();
+        _selectedObjectType = view.ObjectType;
+        _rows = view.Rows;
         _gridLoading = false;
     }
 
@@ -102,24 +76,9 @@ public partial class Explorer : ComponentBase
         _detailLoading = true;
         StateHasChanged();
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        var instance = await context.ObjectInstances
-            .Include(i => i.ObjectType!.Repository)
-            .Include(i => i.ObjectType!.PropertyTypes.OrderBy(pt => pt.Id))
-            .Include(i => i.CreatedBy)
-            .Include(i => i.UpdatedBy)
-            .FirstAsync(i => i.Id == instanceId);
+        _selectedInstanceDetail = await ObjectInstanceService.GetDetailAsync(instanceId);
+        _selectedInstance = _selectedInstanceDetail.ObjectInstance;
 
-        var values = await PropertyValueStore.LoadRawValuesAsync(context, instance.Id, instance.ObjectType!.PropertyTypes);
-        var displayName = await InstanceDisplayHelper.GetDisplayNameAsync(context, instance);
-
-        _selectedInstance = instance;
-        _selectedInstanceDetail = new ExplorerInstanceDetailViewModel
-        {
-            ObjectInstance = instance,
-            DisplayName = displayName,
-            Values = values
-        };
         _detailLoading = false;
     }
 
@@ -132,7 +91,8 @@ public partial class Explorer : ComponentBase
 
         _formMode = FormMode.Create;
         _editingInstanceId = null;
-        var fields = EditableFields(_selectedObjectType.PropertyTypes)
+        var fields = _selectedObjectType.PropertyTypes
+            .Where(pt => !SystemPropertyNames.IsAuditMirror(pt.Name))
             .Select(pt => new PropertyFieldInput { PropertyTypeId = pt.Id, Name = pt.Name, Description = pt.Description, DataType = pt.DataType, RawValue = null })
             .ToList();
 
@@ -146,22 +106,11 @@ public partial class Explorer : ComponentBase
             return;
         }
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        var instance = await context.ObjectInstances
-            .Include(i => i.ObjectType!.PropertyTypes.OrderBy(pt => pt.Id))
-            .FirstAsync(i => i.Id == instanceId);
-
-        var editable = EditableFields(instance.ObjectType!.PropertyTypes);
-        var existingValues = await PropertyValueStore.LoadRawValuesAsync(context, instance.Id, editable);
-        var displayName = await InstanceDisplayHelper.GetDisplayNameAsync(context, instance);
-
         _formMode = FormMode.Edit;
         _editingInstanceId = instanceId;
-        var fields = editable
-            .Select(pt => new PropertyFieldInput { PropertyTypeId = pt.Id, Name = pt.Name, Description = pt.Description, DataType = pt.DataType, RawValue = existingValues.GetValueOrDefault(pt.Id) })
-            .ToList();
 
-        await _instanceFormModal.ShowAsync($"Edit {displayName}", fields);
+        var view = await ObjectInstanceService.GetEditFormFieldsAsync(instanceId);
+        await _instanceFormModal.ShowAsync($"Edit {view.DisplayName}", view.Fields);
     }
 
     private Task OpenEditFormForRowAsync(int instanceId) => OpenEditFormAsync(instanceId);
@@ -177,42 +126,15 @@ public partial class Explorer : ComponentBase
         }
 
         var userId = await GetUserIdAsync();
-        var now = DateTime.UtcNow;
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-
         int savedInstanceId;
 
         if (_formMode == FormMode.Create)
         {
-            var objectType = await context.ObjectTypes
-                .Include(o => o.PropertyTypes.OrderBy(pt => pt.Id))
-                .FirstAsync(o => o.Id == _selectedObjectType.Id);
-
-            var instance = new ObjectInstance
-            {
-                ObjectTypeId = objectType.Id,
-                CreatedById = userId,
-                CreatedAt = now,
-                UpdatedById = userId,
-                UpdatedAt = now
-            };
-            context.ObjectInstances.Add(instance);
-            await context.SaveChangesAsync();
-
-            await SavePropertyValuesAsync(context, instance, objectType.PropertyTypes, userId, now, isCreate: true);
-            savedInstanceId = instance.Id;
+            savedInstanceId = await ObjectInstanceService.SaveAsync(null, _selectedObjectType.Id, _instanceFormModal.CurrentFields, userId);
         }
         else if (_formMode == FormMode.Edit && _editingInstanceId.HasValue)
         {
-            var instance = await context.ObjectInstances
-                .Include(i => i.ObjectType!.PropertyTypes.OrderBy(pt => pt.Id))
-                .FirstAsync(i => i.Id == _editingInstanceId.Value);
-
-            instance.UpdatedById = userId;
-            instance.UpdatedAt = now;
-
-            await SavePropertyValuesAsync(context, instance, instance.ObjectType!.PropertyTypes, userId, now, isCreate: false);
-            savedInstanceId = instance.Id;
+            savedInstanceId = await ObjectInstanceService.SaveAsync(_editingInstanceId.Value, _selectedObjectType.Id, _instanceFormModal.CurrentFields, userId);
         }
         else
         {
@@ -221,22 +143,6 @@ public partial class Explorer : ComponentBase
 
         await SelectObjectTypeAsync(_selectedObjectType);
         await SelectInstanceAsync(savedInstanceId);
-    }
-
-    private async Task SavePropertyValuesAsync(ApplicationDbContext context, ObjectInstance instance, IEnumerable<PropertyType> propertyTypes, string userId, DateTime now, bool isCreate)
-    {
-        var propertyTypeList = propertyTypes.ToList();
-        var editable = EditableFields(propertyTypeList);
-
-        foreach (var field in _instanceFormModal!.CurrentFields)
-        {
-            var propertyType = editable.First(pt => pt.Id == field.PropertyTypeId);
-            await PropertyValueStore.SetValueAsync(context, instance, propertyType, field.RawValue, userId, now);
-        }
-
-        var user = await context.Users.FindAsync(userId);
-        await PropertyValueStore.SetAuditMirrorValuesAsync(context, instance, propertyTypeList, user?.UserName ?? userId, userId, now, isCreate);
-        await context.SaveChangesAsync();
     }
 
     private Task OpenDeleteConfirmForRow(int instanceId)
@@ -268,13 +174,7 @@ public partial class Explorer : ComponentBase
             return;
         }
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        var instance = await context.ObjectInstances.FindAsync(instanceId);
-        if (instance != null)
-        {
-            context.ObjectInstances.Remove(instance);
-            await context.SaveChangesAsync();
-        }
+        await ObjectInstanceService.DeleteAsync(instanceId);
 
         if (_selectedInstance?.Id == instanceId)
         {
@@ -296,20 +196,7 @@ public partial class Explorer : ComponentBase
     private async Task SaveRepositoryAsync(RepositoryFormInput input)
     {
         var userId = await GetUserIdAsync();
-        var now = DateTime.UtcNow;
-
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        context.Repositories.Add(new Repository
-        {
-            Name = input.Name,
-            Description = input.Description,
-            CreatedById = userId,
-            CreatedAt = now,
-            UpdatedById = userId,
-            UpdatedAt = now
-        });
-        await context.SaveChangesAsync();
-
+        await RepositoryService.SaveAsync(input, userId);
         await ReloadRepositoriesAsync();
     }
 
@@ -335,21 +222,11 @@ public partial class Explorer : ComponentBase
             return;
         }
 
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        var toDelete = await context.Repositories
-            .Include(r => r.ObjectTypes)
-            .FirstOrDefaultAsync(r => r.Id == repository.Id);
-
-        if (toDelete != null)
+        var result = await RepositoryService.DeleteAsync(repository.Id);
+        if (!result.Success)
         {
-            if (toDelete.ObjectTypes.Any())
-            {
-                _repositoryError = $"Cannot delete '{toDelete.Name}' because it still contains object types.";
-                return;
-            }
-
-            context.Repositories.Remove(toDelete);
-            await context.SaveChangesAsync();
+            _repositoryError = result.ErrorMessage;
+            return;
         }
 
         if (_selectedRepositoryId == repository.Id)
@@ -370,10 +247,6 @@ public partial class Explorer : ComponentBase
 
     private async Task ReloadRepositoriesAsync()
     {
-        await using var context = await DbContextFactory.CreateDbContextAsync();
-        _repositories = await context.Repositories
-            .Include(r => r.ObjectTypes)
-            .OrderBy(r => r.Name)
-            .ToListAsync();
+        _repositories = await RepositoryService.GetAllWithObjectTypesAsync();
     }
 }
