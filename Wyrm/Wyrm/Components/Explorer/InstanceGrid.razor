@@ -1,5 +1,15 @@
-<div class="explorer-pane-header">
-    <span><i class="fa-solid fa-clone me-1"></i> Instances</span>
+<div class="explorer-pane-header d-flex justify-content-between align-items-center">
+    @if (ObjectType != null)
+    {
+        <span><i class="fa-solid fa-clone me-1"></i> @ObjectType.PluralName</span>
+        <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OnCreateRequested.InvokeAsync()">
+            <i class="fa-solid fa-plus"></i> New @ObjectType.Name
+        </Button>
+    }
+    else
+    {
+        <span><i class="fa-solid fa-clone me-1"></i> Instances</span>
+    }
 </div>
 <div class="explorer-pane-body" id="explorerGridBody">
     @if (ObjectType == null)
@@ -12,13 +22,6 @@
     }
     else
     {
-        <div class="d-flex justify-content-between align-items-center explorer-pane-title">
-            <h5 class="mb-0"><i class="fa-solid fa-cube me-1"></i> @ObjectType.PluralName</h5>
-            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OnCreateRequested.InvokeAsync()">
-                <i class="fa-solid fa-plus"></i> New Instance
-            </Button>
-        </div>
-
         @if (Rows == null || !Rows.Any())
         {
             <p class="text-muted mb-0">No instances found. Create one to get started.</p>
