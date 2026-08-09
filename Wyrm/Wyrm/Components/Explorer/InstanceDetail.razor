@@ -1,5 +1,16 @@
-<div class="explorer-pane-header">
-    <span><i class="fa-solid fa-clone me-1"></i> Details</span>
+<div class="explorer-pane-header d-flex justify-content-between align-items-center">
+    @if (Detail != null)
+    {
+        <span><i class="fa-solid fa-clone me-1"></i> @Detail.ObjectInstance.ObjectType!.Name: @Detail.DisplayName</span>
+        <div>
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OnEditRequested.InvokeAsync()">Edit</Button>
+            <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="() => OnDeleteRequested.InvokeAsync()">Delete</Button>
+        </div>
+    }
+    else
+    {
+        <span><i class="fa-solid fa-clone me-1"></i> Details</span>
+    }
 </div>
 <div class="explorer-pane-body" id="explorerDetailBody">
     @if (IsLoading)
@@ -13,13 +24,6 @@
     else
     {
         var objectType = Detail.ObjectInstance.ObjectType!;
-        <div class="d-flex justify-content-between align-items-center explorer-pane-title">
-            <h5 class="mb-0"><i class="fa-solid fa-clone me-1"></i> @Detail.DisplayName</h5>
-            <div>
-                <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OnEditRequested.InvokeAsync()">Edit</Button>
-                <Button Color="ButtonColor.Danger" Size="ButtonSize.Small" @onclick="() => OnDeleteRequested.InvokeAsync()">Delete</Button>
-            </div>
-        </div>
         <dl class="row mb-0 mt-2">
             @foreach (var propertyType in objectType.PropertyTypes)
             {
