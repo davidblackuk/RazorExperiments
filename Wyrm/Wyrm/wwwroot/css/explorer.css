@@ -39,7 +39,12 @@
 }
 
 .explorer-pane-header .btn i,
-.explorer-pane-title .btn i {
+.explorer-pane-title i {
+    color: var(--sapphire-sky);
+}
+
+.explorer-instance-table .fa-lock,
+.explorer-instance-table .fa-diagram-project {
     color: var(--sapphire-sky);
 }
 

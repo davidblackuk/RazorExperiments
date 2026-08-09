@@ -87,7 +87,8 @@ body {
 
 
 
-#home-page-content div, i{
+#home-page-content div,
+#home-page-content i {
     color: white;
 }
 
