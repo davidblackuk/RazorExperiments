@@ -29,6 +29,11 @@ namespace Wyrm.Models
         public required string Description { get; set; }
 
         /// <summary>
+        /// Gets or sets the plural form of the object type's name (e.g. "Houses" for "House").
+        /// </summary>
+        public required string PluralName { get; set; }
+
+        /// <summary>
         /// Gets or sets the ID of the user who created this object type.
         /// </summary>
         public required string CreatedById { get; set; }

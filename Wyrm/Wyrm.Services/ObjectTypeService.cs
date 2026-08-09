@@ -30,6 +30,7 @@ namespace Wyrm.Services
                 }
 
                 objectType.Name = input.Name;
+                objectType.PluralName = input.PluralName;
                 objectType.Description = input.Description;
                 objectType.UpdatedById = userId;
                 objectType.UpdatedAt = now;
@@ -45,6 +46,7 @@ namespace Wyrm.Services
             var newObjectType = new ObjectType
             {
                 Name = input.Name,
+                PluralName = input.PluralName,
                 Description = input.Description,
                 RepositoryId = repositoryId.Value,
                 CreatedById = userId,
