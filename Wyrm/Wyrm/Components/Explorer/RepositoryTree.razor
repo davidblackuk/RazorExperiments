@@ -26,7 +26,7 @@
                                 <li>
                                     <div class="explorer-tree-node explorer-tree-objecttype-node @(SelectedObjectTypeId == objectType.Id ? "active" : "")"
                                          @onclick="() => OnObjectTypeSelected.InvokeAsync(objectType)">
-                                        <i class="fa-solid fa-cube me-1"></i> @objectType.Name
+                                        <i class="fa-solid fa-cube me-1"></i> @objectType.PluralName
                                     </div>
                                 </li>
                             }

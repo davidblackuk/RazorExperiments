@@ -53,7 +53,7 @@
                                 <li @key="objectType.Id">
                                     <div class="designer-tree-node designer-tree-objecttype-node @(SelectedObjectTypeId == objectType.Id ? "active" : "")">
                                         <span class="designer-tree-node-label" @onclick="() => OnObjectTypeSelected.InvokeAsync(objectType)">
-                                            <i class="fa-solid fa-cube me-1"></i> @objectType.Name
+                                            <i class="fa-solid fa-cube me-1"></i> @objectType.PluralName
                                         </span>
                                         <span class="designer-tree-node-actions position-relative" @onclick:stopPropagation="true">
                                             <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleObjectTypeMenu(objectType.Id)">

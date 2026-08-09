@@ -40,6 +40,23 @@ public partial class Explorer : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await ReloadRepositoriesAsync();
+        await SelectFirstObjectTypeAsync();
+    }
+
+    private async Task SelectFirstObjectTypeAsync()
+    {
+        var firstObjectType = _repositories
+            .OrderBy(r => r.Name)
+            .SelectMany(r => r.ObjectTypes.OrderBy(ot => ot.Name))
+            .FirstOrDefault();
+
+        if (firstObjectType == null)
+        {
+            return;
+        }
+
+        _selectedRepositoryId = firstObjectType.RepositoryId;
+        await SelectObjectTypeAsync(firstObjectType);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -69,6 +86,12 @@ public partial class Explorer : ComponentBase
         _selectedObjectType = view.ObjectType;
         _rows = view.Rows;
         _gridLoading = false;
+
+        var firstRow = _rows?.FirstOrDefault();
+        if (firstRow != null)
+        {
+            await SelectInstanceAsync(firstRow.Id);
+        }
     }
 
     private async Task SelectInstanceAsync(int instanceId)

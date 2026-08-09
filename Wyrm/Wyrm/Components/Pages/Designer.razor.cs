@@ -36,6 +36,23 @@ public partial class Designer : ComponentBase
     protected override async Task OnInitializedAsync()
     {
         await ReloadRepositoriesAsync();
+        await SelectFirstObjectTypeAsync();
+    }
+
+    private async Task SelectFirstObjectTypeAsync()
+    {
+        var firstObjectType = _repositories
+            .OrderBy(r => r.Name)
+            .SelectMany(r => r.ObjectTypes.OrderBy(ot => ot.Name))
+            .FirstOrDefault();
+
+        if (firstObjectType == null)
+        {
+            return;
+        }
+
+        _selectedRepositoryId = firstObjectType.RepositoryId;
+        await SelectObjectTypeAsync(firstObjectType);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -131,6 +148,12 @@ public partial class Designer : ComponentBase
         _selectedObjectType = loaded;
         _propertyTypes = loaded.PropertyTypes.ToList();
         _gridLoading = false;
+
+        var firstPropertyType = _propertyTypes.FirstOrDefault();
+        if (firstPropertyType != null)
+        {
+            await SelectPropertyTypeAsync(firstPropertyType.Id);
+        }
     }
 
     private Task OpenCreateObjectTypeForm(Repository repository)
