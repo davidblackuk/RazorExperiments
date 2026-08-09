@@ -140,3 +140,16 @@
 .explorer-modal-backdrop {
     background-color: rgba(0, 0, 0, 0.5);
 }
+
+.dropdown-menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 999;
+}
+
+/* .dropdown-menu-end only right-aligns via Bootstrap's JS-driven [data-bs-popper]
+   positioning; our menus are pure CSS (no Popper), so align explicitly instead. */
+.dropdown-menu-end {
+    right: 0;
+    left: auto;
+}

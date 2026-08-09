@@ -8,29 +8,37 @@
         <ul class="designer-tree-root list-unstyled mb-0">
             @foreach (var repository in Repositories.OrderBy(r => r.Name))
             {
-                <li>
+                <li @key="repository.Id">
                     <div class="designer-tree-node designer-tree-repo-node @(IsCollapsed(repository.Id) ? "" : "designer-tree-expanded") @(SelectedRepositoryId == repository.Id ? "active" : "")">
                         <span class="designer-tree-node-label" @onclick="() => SelectRepository(repository)">
                             <i class="fa-solid fa-chevron-right designer-tree-caret"></i>
                             <i class="fa-solid fa-database me-1"></i> @repository.Name
                         </span>
-                        <span class="designer-tree-node-actions" @onclick:stopPropagation="true">
-                            <Dropdown>
-                                <DropdownToggleButton Color="DropdownColor.Light" Size="DropdownSize.Small" Class="no-caret" title="Actions">
-                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                </DropdownToggleButton>
-                                <DropdownMenu>
-                                    <DropdownItem @onclick="() => OnAddObjectTypeRequested.InvokeAsync(repository)">
-                                        <i class="fa-solid fa-plus me-2"></i>Add Object Type
-                                    </DropdownItem>
-                                    <DropdownItem @onclick="() => OnEditRepositoryRequested.InvokeAsync(repository)">
-                                        <i class="fa-solid fa-pen me-2"></i>Edit Repository
-                                    </DropdownItem>
-                                    <DropdownItem @onclick="() => OnDeleteRepositoryRequested.InvokeAsync(repository)">
-                                        <i class="fa-solid fa-trash me-2"></i>Delete Repository
-                                    </DropdownItem>
-                                </DropdownMenu>
-                            </Dropdown>
+                        <span class="designer-tree-node-actions position-relative" @onclick:stopPropagation="true">
+                            <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleRepositoryMenu(repository.Id)">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                            @if (_openRepositoryMenuId == repository.Id)
+                            {
+                                <div class="dropdown-menu-overlay" @onclick="CloseMenus"></div>
+                                <ul class="dropdown-menu dropdown-menu-end show">
+                                    <li>
+                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnAddObjectTypeRequested.InvokeAsync(repository); }">
+                                            <i class="fa-solid fa-plus me-2"></i>Add Object Type
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnEditRepositoryRequested.InvokeAsync(repository); }">
+                                            <i class="fa-solid fa-pen me-2"></i>Edit Repository
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnDeleteRepositoryRequested.InvokeAsync(repository); }">
+                                            <i class="fa-solid fa-trash me-2"></i>Delete Repository
+                                        </button>
+                                    </li>
+                                </ul>
+                            }
                         </span>
                     </div>
                     <ul class="designer-tree-children list-unstyled @(IsCollapsed(repository.Id) ? "designer-tree-collapsed" : "")">
@@ -42,28 +50,36 @@
                         {
                             @foreach (var objectType in repository.ObjectTypes.OrderBy(ot => ot.Name))
                             {
-                                <li>
+                                <li @key="objectType.Id">
                                     <div class="designer-tree-node designer-tree-objecttype-node @(SelectedObjectTypeId == objectType.Id ? "active" : "")">
                                         <span class="designer-tree-node-label" @onclick="() => OnObjectTypeSelected.InvokeAsync(objectType)">
                                             <i class="fa-solid fa-cube me-1"></i> @objectType.Name
                                         </span>
-                                        <span class="designer-tree-node-actions" @onclick:stopPropagation="true">
-                                            <Dropdown>
-                                                <DropdownToggleButton Color="DropdownColor.Light" Size="DropdownSize.Small" Class="no-caret" title="Actions">
-                                                    <i class="fa-solid fa-ellipsis-vertical"></i>
-                                                </DropdownToggleButton>
-                                                <DropdownMenu>
-                                                    <DropdownItem @onclick="() => OnAddPropertyTypeRequested.InvokeAsync(objectType)">
-                                                        <i class="fa-solid fa-plus me-2"></i>Add Property Type
-                                                    </DropdownItem>
-                                                    <DropdownItem @onclick="() => OnEditObjectTypeRequested.InvokeAsync(objectType)">
-                                                        <i class="fa-solid fa-pen me-2"></i>Edit Object Type
-                                                    </DropdownItem>
-                                                    <DropdownItem @onclick="() => OnDeleteObjectTypeRequested.InvokeAsync(objectType)">
-                                                        <i class="fa-solid fa-trash me-2"></i>Delete Object Type
-                                                    </DropdownItem>
-                                                </DropdownMenu>
-                                            </Dropdown>
+                                        <span class="designer-tree-node-actions position-relative" @onclick:stopPropagation="true">
+                                            <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleObjectTypeMenu(objectType.Id)">
+                                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            </button>
+                                            @if (_openObjectTypeMenuId == objectType.Id)
+                                            {
+                                                <div class="dropdown-menu-overlay" @onclick="CloseMenus"></div>
+                                                <ul class="dropdown-menu dropdown-menu-end show">
+                                                    <li>
+                                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnAddPropertyTypeRequested.InvokeAsync(objectType); }">
+                                                            <i class="fa-solid fa-plus me-2"></i>Add Property Type
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnEditObjectTypeRequested.InvokeAsync(objectType); }">
+                                                            <i class="fa-solid fa-pen me-2"></i>Edit Object Type
+                                                        </button>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnDeleteObjectTypeRequested.InvokeAsync(objectType); }">
+                                                            <i class="fa-solid fa-trash me-2"></i>Delete Object Type
+                                                        </button>
+                                                    </li>
+                                                </ul>
+                                            }
                                         </span>
                                     </div>
                                 </li>

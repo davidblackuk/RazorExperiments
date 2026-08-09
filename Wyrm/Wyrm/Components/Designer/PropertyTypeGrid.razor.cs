@@ -14,9 +14,16 @@ public partial class PropertyTypeGrid : ComponentBase
     [Parameter] public EventCallback<int> OnEditRequested { get; set; }
     [Parameter] public EventCallback<int> OnDeleteRequested { get; set; }
 
+    private int? _openActionsMenuId;
+
     private Task HandleRowClick(GridRowEventArgs<PropertyType> args) =>
         OnPropertyTypeSelected.InvokeAsync(args.Item.Id);
 
     private string GetRowClass(PropertyType propertyType) =>
         SelectedPropertyTypeId == propertyType.Id ? "table-active" : string.Empty;
+
+    private void ToggleActionsMenu(int propertyTypeId) =>
+        _openActionsMenuId = _openActionsMenuId == propertyTypeId ? null : propertyTypeId;
+
+    private void CloseActionsMenu() => _openActionsMenuId = null;
 }

@@ -20,6 +20,8 @@ public partial class SchemaTree : ComponentBase
     [Parameter] public EventCallback<ObjectType> OnDeleteObjectTypeRequested { get; set; }
 
     private readonly HashSet<int> _collapsedRepositoryIds = new();
+    private int? _openRepositoryMenuId;
+    private int? _openObjectTypeMenuId;
 
     private void ToggleRepository(int repositoryId)
     {
@@ -36,4 +38,16 @@ public partial class SchemaTree : ComponentBase
     }
 
     private bool IsCollapsed(int repositoryId) => _collapsedRepositoryIds.Contains(repositoryId);
+
+    private void ToggleRepositoryMenu(int repositoryId) =>
+        _openRepositoryMenuId = _openRepositoryMenuId == repositoryId ? null : repositoryId;
+
+    private void ToggleObjectTypeMenu(int objectTypeId) =>
+        _openObjectTypeMenuId = _openObjectTypeMenuId == objectTypeId ? null : objectTypeId;
+
+    private void CloseMenus()
+    {
+        _openRepositoryMenuId = null;
+        _openObjectTypeMenuId = null;
+    }
 }

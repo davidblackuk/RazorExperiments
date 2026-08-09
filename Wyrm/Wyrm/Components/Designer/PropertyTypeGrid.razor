@@ -41,20 +41,26 @@
                     <GridColumn TItem="PropertyType" HeaderText="Actions" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
                         @if (!context.IsSystemProperty)
                         {
-                            <span @onclick:stopPropagation="true">
-                                <Dropdown>
-                                    <DropdownToggleButton Color="DropdownColor.Light" Size="DropdownSize.Small" Class="no-caret" title="Actions">
-                                        <i class="fa-solid fa-ellipsis-vertical"></i>
-                                    </DropdownToggleButton>
-                                    <DropdownMenu>
-                                        <DropdownItem @onclick="() => OnEditRequested.InvokeAsync(context.Id)">
-                                            <i class="fa-solid fa-pen me-2"></i>Edit
-                                        </DropdownItem>
-                                        <DropdownItem @onclick="() => OnDeleteRequested.InvokeAsync(context.Id)">
-                                            <i class="fa-solid fa-trash me-2"></i>Delete
-                                        </DropdownItem>
-                                    </DropdownMenu>
-                                </Dropdown>
+                            <span class="position-relative" @onclick:stopPropagation="true">
+                                <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleActionsMenu(context.Id)">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                @if (_openActionsMenuId == context.Id)
+                                {
+                                    <div class="dropdown-menu-overlay" @onclick="CloseActionsMenu"></div>
+                                    <ul class="dropdown-menu dropdown-menu-end show">
+                                        <li>
+                                            <button type="button" class="dropdown-item" @onclick="() => { CloseActionsMenu(); OnEditRequested.InvokeAsync(context.Id); }">
+                                                <i class="fa-solid fa-pen me-2"></i>Edit
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item" @onclick="() => { CloseActionsMenu(); OnDeleteRequested.InvokeAsync(context.Id); }">
+                                                <i class="fa-solid fa-trash me-2"></i>Delete
+                                            </button>
+                                        </li>
+                                    </ul>
+                                }
                             </span>
                         }
                     </GridColumn>
