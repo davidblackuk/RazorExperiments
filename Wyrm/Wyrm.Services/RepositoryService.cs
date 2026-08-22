@@ -16,6 +16,16 @@ namespace Wyrm.Services
                 .ToListAsync();
         }
 
+        public async Task<List<Repository>> GetAllWithModelsAsync()
+        {
+            await using var context = await dbContextFactory.CreateDbContextAsync();
+            return await context.Repositories
+                .Include(r => r.ObjectTypes)
+                .Include(r => r.AssociationTypes)
+                .OrderBy(r => r.Name)
+                .ToListAsync();
+        }
+
         public async Task<int?> SaveAsync(RepositoryFormInput input, string userId)
         {
             var now = DateTime.UtcNow;
@@ -56,6 +66,7 @@ namespace Wyrm.Services
             await using var context = await dbContextFactory.CreateDbContextAsync();
             var toDelete = await context.Repositories
                 .Include(r => r.ObjectTypes)
+                .Include(r => r.AssociationTypes)
                 .FirstOrDefaultAsync(r => r.Id == repositoryId);
 
             if (toDelete == null)
@@ -63,9 +74,9 @@ namespace Wyrm.Services
                 return ServiceResult.Ok();
             }
 
-            if (toDelete.ObjectTypes.Any())
+            if (toDelete.ObjectTypes.Any() || toDelete.AssociationTypes.Any())
             {
-                return ServiceResult.Fail($"Cannot delete '{toDelete.Name}' because it still contains object types.");
+                return ServiceResult.Fail($"Cannot delete '{toDelete.Name}' because it still contains object types or association types.");
             }
 
             context.Repositories.Remove(toDelete);

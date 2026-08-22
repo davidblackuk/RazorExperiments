@@ -60,15 +60,25 @@ namespace Wyrm.Services
             return newObjectType.Id;
         }
 
-        public async Task DeleteAsync(int objectTypeId)
+        public async Task<ServiceResult> DeleteAsync(int objectTypeId)
         {
             await using var context = await dbContextFactory.CreateDbContextAsync();
             var toDelete = await context.ObjectTypes.FindAsync(objectTypeId);
-            if (toDelete != null)
+            if (toDelete == null)
             {
-                context.ObjectTypes.Remove(toDelete);
-                await context.SaveChangesAsync();
+                return ServiceResult.Ok();
             }
+
+            var isReferencedByAssociationType = await context.AssociationTypes
+                .AnyAsync(a => a.SourceObjectTypeId == objectTypeId || a.TargetObjectTypeId == objectTypeId);
+            if (isReferencedByAssociationType)
+            {
+                return ServiceResult.Fail($"Cannot delete '{toDelete.Name}' because it is used as the source or target of one or more association types.");
+            }
+
+            context.ObjectTypes.Remove(toDelete);
+            await context.SaveChangesAsync();
+            return ServiceResult.Ok();
         }
     }
 }

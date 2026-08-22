@@ -15,3 +15,4 @@ These are the icons for the Designer section of the application
 | Object types   | `<i class="fa-solid fa-cube me-1"></i> `				|
 | property types | `<i class="fa-solid fa-diagram-project me-1"></i>`	|
 | Object instance | `<i class="fa-solid fa-clone me-1"></i>`			|
+| Association types | `<i class="fa-solid fa-link me-1"></i>`			|

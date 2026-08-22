@@ -14,6 +14,9 @@ namespace Wyrm.Data
         public DbSet<PropertyValueInt> PropertyValueInts { get; set; }
         public DbSet<PropertyValueNumber> PropertyValueNumbers { get; set; }
         public DbSet<PropertyValueDateTime> PropertyValueDateTimes { get; set; }
+        public DbSet<AssociationType> AssociationTypes { get; set; }
+        public DbSet<AssociationPropertyType> AssociationPropertyTypes { get; set; }
+        public DbSet<AssociationInstance> AssociationInstances { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -199,6 +202,87 @@ namespace Wyrm.Data
             modelBuilder.Entity<PropertyValueDateTime>()
                 .HasIndex(v => new { v.ObjectInstanceId, v.PropertyTypeId })
                 .IsUnique();
+
+            modelBuilder.Entity<AssociationType>()
+                .HasOne(a => a.CreatedBy)
+                .WithMany()
+                .HasForeignKey(a => a.CreatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationType>()
+                .HasOne(a => a.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(a => a.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationType>()
+                .HasOne(a => a.Repository)
+                .WithMany(r => r.AssociationTypes)
+                .HasForeignKey(a => a.RepositoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Two separate FKs from AssociationType to ObjectTypes - each needs its own
+            // explicit HasOne/HasForeignKey/WithMany() call with no inverse navigation,
+            // or EF Core can't tell the two relationships apart.
+            modelBuilder.Entity<AssociationType>()
+                .HasOne(a => a.SourceObjectType)
+                .WithMany()
+                .HasForeignKey(a => a.SourceObjectTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationType>()
+                .HasOne(a => a.TargetObjectType)
+                .WithMany()
+                .HasForeignKey(a => a.TargetObjectTypeId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationPropertyType>()
+                .HasOne(p => p.CreatedBy)
+                .WithMany()
+                .HasForeignKey(p => p.CreatedById)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<AssociationPropertyType>()
+                .HasOne(p => p.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(p => p.UpdatedById)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<AssociationPropertyType>()
+                .HasOne(p => p.AssociationType)
+                .WithMany(a => a.PropertyTypes)
+                .HasForeignKey(p => p.AssociationTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationInstance>()
+                .HasOne(i => i.CreatedBy)
+                .WithMany()
+                .HasForeignKey(i => i.CreatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationInstance>()
+                .HasOne(i => i.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(i => i.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationInstance>()
+                .HasOne(i => i.AssociationType)
+                .WithMany(a => a.AssociationInstances)
+                .HasForeignKey(i => i.AssociationTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationInstance>()
+                .HasOne(i => i.SourceObjectInstance)
+                .WithMany()
+                .HasForeignKey(i => i.SourceObjectInstanceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationInstance>()
+                .HasOne(i => i.TargetObjectInstance)
+                .WithMany()
+                .HasForeignKey(i => i.TargetObjectInstanceId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

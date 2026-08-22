@@ -61,5 +61,10 @@ namespace Wyrm.Models
         /// Gets or sets the collection of object types associated with this repository.
         /// </summary>
         public ICollection<ObjectType> ObjectTypes { get; set; } = new List<ObjectType>();
+
+        /// <summary>
+        /// Gets or sets the collection of association types associated with this repository.
+        /// </summary>
+        public ICollection<AssociationType> AssociationTypes { get; set; } = new List<AssociationType>();
     }
 }

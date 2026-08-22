@@ -1,0 +1,71 @@
+<div class="explorer-pane-header">
+    <span><i class="fa-solid fa-diagram-project me-1"></i> Property Types</span>
+</div>
+<div class="explorer-pane-body" id="designerGridBody">
+    @if (AssociationType == null)
+    {
+        <p class="text-muted mb-0">Select an association type from the tree to view its property types.</p>
+    }
+    else if (IsLoading)
+    {
+        <p class="text-muted mb-0">Loading&hellip;</p>
+    }
+    else
+    {
+        <div class="explorer-pane-title">
+            <h5 class="mb-0"><i class="fa-solid fa-link me-1"></i> @AssociationType.ForwardName / @AssociationType.ReverseName</h5>
+        </div>
+
+        @if (PropertyTypes == null || !PropertyTypes.Any())
+        {
+            <p class="text-muted mb-0">No property types found.</p>
+        }
+        else
+        {
+            <Grid TItem="AssociationPropertyType" Class="table table-hover explorer-instance-table mb-0"
+                  Data="PropertyTypes" AllowRowClick="true" OnRowClick="HandleRowClick" RowClass="GetRowClass">
+                <GridColumns>
+                    <GridColumn TItem="AssociationPropertyType" HeaderText="Name">
+                        @if (context.IsSystemProperty)
+                        {
+                            <i class="fa-solid fa-lock me-2" title="System Property"></i>
+                        }
+                        else
+                        {
+                            <i class="fa-solid fa-diagram-project me-2" title="Property Type"></i>
+                        }
+                        @context.Name
+                    </GridColumn>
+                    <GridColumn TItem="AssociationPropertyType" HeaderText="Data Type">@context.DataType</GridColumn>
+                    <GridColumn TItem="AssociationPropertyType" HeaderText="Description">@context.Description</GridColumn>
+                    <GridColumn TItem="AssociationPropertyType" HeaderText="Actions" HeaderTextAlignment="Alignment.End" TextAlignment="Alignment.End">
+                        @if (!context.IsSystemProperty)
+                        {
+                            <span class="position-relative" @onclick:stopPropagation="true">
+                                <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleActionsMenu(context.Id)">
+                                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+                                @if (_openActionsMenuId == context.Id)
+                                {
+                                    <div class="dropdown-menu-overlay" @onclick="CloseActionsMenu"></div>
+                                    <ul class="dropdown-menu dropdown-menu-end show">
+                                        <li>
+                                            <button type="button" class="dropdown-item" @onclick="() => { CloseActionsMenu(); OnEditRequested.InvokeAsync(context.Id); }">
+                                                <i class="fa-solid fa-pen me-2"></i>Edit
+                                            </button>
+                                        </li>
+                                        <li>
+                                            <button type="button" class="dropdown-item" @onclick="() => { CloseActionsMenu(); OnDeleteRequested.InvokeAsync(context.Id); }">
+                                                <i class="fa-solid fa-trash me-2"></i>Delete
+                                            </button>
+                                        </li>
+                                    </ul>
+                                }
+                            </span>
+                        }
+                    </GridColumn>
+                </GridColumns>
+            </Grid>
+        }
+    }
+</div>

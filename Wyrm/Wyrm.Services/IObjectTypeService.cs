@@ -17,6 +17,10 @@ namespace Wyrm.Services
         /// </summary>
         Task<int?> SaveAsync(ObjectTypeFormInput input, int? repositoryId, string userId);
 
-        Task DeleteAsync(int objectTypeId);
+        /// <summary>
+        /// Deletes an object type, refusing (via a failed result) while it is used as the source or target
+        /// of an association type.
+        /// </summary>
+        Task<ServiceResult> DeleteAsync(int objectTypeId);
     }
 }

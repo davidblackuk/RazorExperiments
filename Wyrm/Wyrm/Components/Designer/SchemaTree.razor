@@ -23,11 +23,6 @@
                                 <div class="dropdown-menu-overlay" @onclick="CloseMenus"></div>
                                 <ul class="dropdown-menu dropdown-menu-end show">
                                     <li>
-                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnAddObjectTypeRequested.InvokeAsync(repository); }">
-                                            <i class="fa-solid fa-plus me-2"></i>Add Object Type
-                                        </button>
-                                    </li>
-                                    <li>
                                         <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnEditRepositoryRequested.InvokeAsync(repository); }">
                                             <i class="fa-solid fa-pen me-2"></i>Edit Repository
                                         </button>
@@ -42,49 +37,145 @@
                         </span>
                     </div>
                     <ul class="designer-tree-children list-unstyled @(IsCollapsed(repository.Id) ? "designer-tree-collapsed" : "")">
-                        @if (!repository.ObjectTypes.Any())
-                        {
-                            <li class="designer-tree-empty text-muted">No object types</li>
-                        }
-                        else
-                        {
-                            @foreach (var objectType in repository.ObjectTypes.OrderBy(ot => ot.Name))
-                            {
-                                <li @key="objectType.Id">
-                                    <div class="designer-tree-node designer-tree-objecttype-node @(SelectedObjectTypeId == objectType.Id ? "active" : "")">
-                                        <span class="designer-tree-node-label" @onclick="() => OnObjectTypeSelected.InvokeAsync(objectType)">
-                                            <i class="fa-solid fa-cube me-1"></i> @objectType.PluralName
-                                        </span>
-                                        <span class="designer-tree-node-actions position-relative" @onclick:stopPropagation="true">
-                                            <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleObjectTypeMenu(objectType.Id)">
-                                                <i class="fa-solid fa-ellipsis-vertical"></i>
-                                            </button>
-                                            @if (_openObjectTypeMenuId == objectType.Id)
-                                            {
-                                                <div class="dropdown-menu-overlay" @onclick="CloseMenus"></div>
-                                                <ul class="dropdown-menu dropdown-menu-end show">
-                                                    <li>
-                                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnAddPropertyTypeRequested.InvokeAsync(objectType); }">
-                                                            <i class="fa-solid fa-plus me-2"></i>Add Property Type
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnEditObjectTypeRequested.InvokeAsync(objectType); }">
-                                                            <i class="fa-solid fa-pen me-2"></i>Edit Object Type
-                                                        </button>
-                                                    </li>
-                                                    <li>
-                                                        <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnDeleteObjectTypeRequested.InvokeAsync(objectType); }">
-                                                            <i class="fa-solid fa-trash me-2"></i>Delete Object Type
-                                                        </button>
-                                                    </li>
-                                                </ul>
-                                            }
-                                        </span>
-                                    </div>
-                                </li>
-                            }
-                        }
+                        <li class="designer-tree-models-node">Models</li>
+                        <li>
+                            <div class="designer-tree-node designer-tree-group-node @(IsObjectTypesGroupCollapsed(repository.Id) ? "" : "designer-tree-expanded")">
+                                <span class="designer-tree-node-label" @onclick="() => ToggleObjectTypesGroup(repository.Id)">
+                                    <i class="fa-solid fa-chevron-right designer-tree-caret"></i>
+                                    <i class="fa-solid fa-cube me-1"></i> Object Types
+                                </span>
+                                <span class="designer-tree-node-actions position-relative" @onclick:stopPropagation="true">
+                                    <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleObjectTypesGroupMenu(repository.Id)">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    @if (_openObjectTypesGroupMenuId == repository.Id)
+                                    {
+                                        <div class="dropdown-menu-overlay" @onclick="CloseMenus"></div>
+                                        <ul class="dropdown-menu dropdown-menu-end show">
+                                            <li>
+                                                <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnAddObjectTypeRequested.InvokeAsync(repository); }">
+                                                    <i class="fa-solid fa-plus me-2"></i>Add Object Type
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    }
+                                </span>
+                            </div>
+                            <ul class="designer-tree-children list-unstyled @(IsObjectTypesGroupCollapsed(repository.Id) ? "designer-tree-collapsed" : "")">
+                                @if (!repository.ObjectTypes.Any())
+                                {
+                                    <li class="designer-tree-empty text-muted">No object types</li>
+                                }
+                                else
+                                {
+                                    @foreach (var objectType in repository.ObjectTypes.OrderBy(ot => ot.Name))
+                                    {
+                                        <li @key="objectType.Id">
+                                            <div class="designer-tree-node designer-tree-objecttype-node @(SelectedObjectTypeId == objectType.Id ? "active" : "")">
+                                                <span class="designer-tree-node-label" @onclick="() => OnObjectTypeSelected.InvokeAsync(objectType)">
+                                                    <i class="fa-solid fa-cube me-1"></i> @objectType.PluralName
+                                                </span>
+                                                <span class="designer-tree-node-actions position-relative" @onclick:stopPropagation="true">
+                                                    <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleObjectTypeMenu(objectType.Id)">
+                                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                    </button>
+                                                    @if (_openObjectTypeMenuId == objectType.Id)
+                                                    {
+                                                        <div class="dropdown-menu-overlay" @onclick="CloseMenus"></div>
+                                                        <ul class="dropdown-menu dropdown-menu-end show">
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnAddPropertyTypeRequested.InvokeAsync(objectType); }">
+                                                                    <i class="fa-solid fa-plus me-2"></i>Add Property Type
+                                                                </button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnEditObjectTypeRequested.InvokeAsync(objectType); }">
+                                                                    <i class="fa-solid fa-pen me-2"></i>Edit Object Type
+                                                                </button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnDeleteObjectTypeRequested.InvokeAsync(objectType); }">
+                                                                    <i class="fa-solid fa-trash me-2"></i>Delete Object Type
+                                                                </button>
+                                                            </li>
+                                                        </ul>
+                                                    }
+                                                </span>
+                                            </div>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </li>
+                        <li>
+                            <div class="designer-tree-node designer-tree-group-node @(IsAssociationTypesGroupCollapsed(repository.Id) ? "" : "designer-tree-expanded")">
+                                <span class="designer-tree-node-label" @onclick="() => ToggleAssociationTypesGroup(repository.Id)">
+                                    <i class="fa-solid fa-chevron-right designer-tree-caret"></i>
+                                    <i class="fa-solid fa-link me-1"></i> Association Types
+                                </span>
+                                <span class="designer-tree-node-actions position-relative" @onclick:stopPropagation="true">
+                                    <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleAssociationTypesGroupMenu(repository.Id)">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </button>
+                                    @if (_openAssociationTypesGroupMenuId == repository.Id)
+                                    {
+                                        <div class="dropdown-menu-overlay" @onclick="CloseMenus"></div>
+                                        <ul class="dropdown-menu dropdown-menu-end show">
+                                            <li>
+                                                <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnAddAssociationTypeRequested.InvokeAsync(repository); }">
+                                                    <i class="fa-solid fa-plus me-2"></i>Add Association Type
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    }
+                                </span>
+                            </div>
+                            <ul class="designer-tree-children list-unstyled @(IsAssociationTypesGroupCollapsed(repository.Id) ? "designer-tree-collapsed" : "")">
+                                @if (!repository.AssociationTypes.Any())
+                                {
+                                    <li class="designer-tree-empty text-muted">No association types</li>
+                                }
+                                else
+                                {
+                                    @foreach (var associationType in repository.AssociationTypes.OrderBy(a => a.ForwardName))
+                                    {
+                                        <li @key="associationType.Id">
+                                            <div class="designer-tree-node designer-tree-associationtype-node @(SelectedAssociationTypeId == associationType.Id ? "active" : "")">
+                                                <span class="designer-tree-node-label" @onclick="() => OnAssociationTypeSelected.InvokeAsync(associationType)">
+                                                    <i class="fa-solid fa-link me-1"></i> @associationType.ForwardName / @associationType.ReverseName
+                                                </span>
+                                                <span class="designer-tree-node-actions position-relative" @onclick:stopPropagation="true">
+                                                    <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="() => ToggleAssociationTypeMenu(associationType.Id)">
+                                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                    </button>
+                                                    @if (_openAssociationTypeMenuId == associationType.Id)
+                                                    {
+                                                        <div class="dropdown-menu-overlay" @onclick="CloseMenus"></div>
+                                                        <ul class="dropdown-menu dropdown-menu-end show">
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnAddAssociationPropertyTypeRequested.InvokeAsync(associationType); }">
+                                                                    <i class="fa-solid fa-plus me-2"></i>Add Property Type
+                                                                </button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnEditAssociationTypeRequested.InvokeAsync(associationType); }">
+                                                                    <i class="fa-solid fa-pen me-2"></i>Edit Association Type
+                                                                </button>
+                                                            </li>
+                                                            <li>
+                                                                <button type="button" class="dropdown-item" @onclick="() => { CloseMenus(); OnDeleteAssociationTypeRequested.InvokeAsync(associationType); }">
+                                                                    <i class="fa-solid fa-trash me-2"></i>Delete Association Type
+                                                                </button>
+                                                            </li>
+                                                        </ul>
+                                                    }
+                                                </span>
+                                            </div>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </li>
                     </ul>
                 </li>
             }

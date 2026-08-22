@@ -25,9 +25,20 @@ public partial class Designer : ComponentBase
     private PropertyType? _selectedPropertyType;
     private bool _detailLoading;
 
+    private string? _objectTypeError;
+    private int? _newAssociationTypeRepositoryId;
+
+    private AssociationType? _selectedAssociationType;
+    private List<AssociationPropertyType>? _associationPropertyTypes;
+    private int? _newAssociationPropertyTypeAssociationTypeId;
+
+    private AssociationPropertyType? _selectedAssociationPropertyType;
+
     private RepositoryFormModal? _repositoryFormModal;
     private ObjectTypeFormModal? _objectTypeFormModal;
     private PropertyTypeFormModal? _propertyTypeFormModal;
+    private AssociationTypeFormModal? _associationTypeFormModal;
+    private AssociationPropertyTypeFormModal? _associationPropertyTypeFormModal;
     private ConfirmDialog? _confirmDialog;
 
     [CascadingParameter]
@@ -72,7 +83,7 @@ public partial class Designer : ComponentBase
 
     private async Task ReloadRepositoriesAsync()
     {
-        _repositories = await RepositoryService.GetAllWithObjectTypesAsync();
+        _repositories = await RepositoryService.GetAllWithModelsAsync();
     }
 
     // --- Repository ---
@@ -105,7 +116,7 @@ public partial class Designer : ComponentBase
         var confirmed = await _confirmDialog.ShowAsync(
             title: $"Delete: {repository.Name}",
             message1: $"Are you sure you want to delete the repository '{repository.Name}'?",
-            message2: "This is only allowed while the repository has no object types.",
+            message2: "This is only allowed while the repository has no object types or association types.",
             confirmDialogOptions: new ConfirmDialogOptions { YesButtonText = "Delete", YesButtonColor = ButtonColor.Danger });
 
         if (!confirmed)
@@ -132,6 +143,13 @@ public partial class Designer : ComponentBase
             _selectedPropertyType = null;
         }
 
+        if (_selectedAssociationType?.RepositoryId == repository.Id)
+        {
+            _selectedAssociationType = null;
+            _associationPropertyTypes = null;
+            _selectedAssociationPropertyType = null;
+        }
+
         await ReloadRepositoriesAsync();
     }
 
@@ -139,6 +157,10 @@ public partial class Designer : ComponentBase
 
     private async Task SelectObjectTypeAsync(ObjectType objectType)
     {
+        _selectedAssociationType = null;
+        _associationPropertyTypes = null;
+        _selectedAssociationPropertyType = null;
+
         _selectedPropertyType = null;
         _gridLoading = true;
         StateHasChanged();
@@ -200,7 +222,14 @@ public partial class Designer : ComponentBase
             return;
         }
 
-        await ObjectTypeService.DeleteAsync(objectType.Id);
+        var result = await ObjectTypeService.DeleteAsync(objectType.Id);
+        if (!result.Success)
+        {
+            _objectTypeError = result.ErrorMessage;
+            return;
+        }
+
+        _objectTypeError = null;
 
         if (_selectedObjectType?.Id == objectType.Id)
         {
@@ -298,5 +327,176 @@ public partial class Designer : ComponentBase
         }
 
         await SelectObjectTypeAsync(_selectedObjectType);
+    }
+
+    // --- AssociationType ---
+
+    private async Task SelectAssociationTypeAsync(AssociationType associationType)
+    {
+        _selectedObjectType = null;
+        _propertyTypes = null;
+        _selectedPropertyType = null;
+
+        _selectedAssociationPropertyType = null;
+        _gridLoading = true;
+        StateHasChanged();
+
+        var loaded = await AssociationTypeService.GetForDesignerAsync(associationType.Id);
+
+        _selectedAssociationType = loaded;
+        _associationPropertyTypes = loaded.PropertyTypes.ToList();
+        _gridLoading = false;
+
+        var firstPropertyType = _associationPropertyTypes.FirstOrDefault();
+        if (firstPropertyType != null)
+        {
+            await SelectAssociationPropertyTypeAsync(firstPropertyType.Id);
+        }
+    }
+
+    private Task OpenCreateAssociationTypeForm(Repository repository)
+    {
+        _newAssociationTypeRepositoryId = repository.Id;
+        return _associationTypeFormModal?.ShowAsync(repository.ObjectTypes.OrderBy(o => o.Name).ToList()) ?? Task.CompletedTask;
+    }
+
+    private Task OpenEditAssociationTypeForm(AssociationType associationType)
+    {
+        _newAssociationTypeRepositoryId = null;
+        var repository = _repositories.FirstOrDefault(r => r.Id == associationType.RepositoryId);
+        var objectTypes = repository?.ObjectTypes.OrderBy(o => o.Name).ToList() ?? new List<ObjectType>();
+        return _associationTypeFormModal?.ShowAsync(associationType, objectTypes) ?? Task.CompletedTask;
+    }
+
+    private async Task SaveAssociationTypeAsync(AssociationTypeFormInput input)
+    {
+        var userId = await GetUserIdAsync();
+        await AssociationTypeService.SaveAsync(input, _newAssociationTypeRepositoryId, userId);
+
+        _newAssociationTypeRepositoryId = null;
+        await ReloadRepositoriesAsync();
+
+        if (_selectedAssociationType != null && _selectedAssociationType.Id == input.Id)
+        {
+            await SelectAssociationTypeAsync(_selectedAssociationType);
+        }
+    }
+
+    private async Task DeleteAssociationTypeAsync(AssociationType associationType)
+    {
+        if (_confirmDialog == null)
+        {
+            return;
+        }
+
+        var confirmed = await _confirmDialog.ShowAsync(
+            title: $"Delete: {associationType.ForwardName} / {associationType.ReverseName}",
+            message1: $"Are you sure you want to delete the association type '{associationType.ForwardName} / {associationType.ReverseName}'?",
+            message2: "This will delete all of its property types. There is no undo operation for this action.",
+            confirmDialogOptions: new ConfirmDialogOptions { YesButtonText = "Delete", YesButtonColor = ButtonColor.Danger });
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        await AssociationTypeService.DeleteAsync(associationType.Id);
+
+        if (_selectedAssociationType?.Id == associationType.Id)
+        {
+            _selectedAssociationType = null;
+            _associationPropertyTypes = null;
+            _selectedAssociationPropertyType = null;
+        }
+
+        await ReloadRepositoriesAsync();
+    }
+
+    // --- AssociationPropertyType ---
+
+    private async Task SelectAssociationPropertyTypeAsync(int associationPropertyTypeId)
+    {
+        _detailLoading = true;
+        StateHasChanged();
+
+        _selectedAssociationPropertyType = await AssociationPropertyTypeService.GetWithAuditUsersAsync(associationPropertyTypeId);
+
+        _detailLoading = false;
+    }
+
+    private Task OpenCreateAssociationPropertyTypeForm(AssociationType associationType)
+    {
+        _newAssociationPropertyTypeAssociationTypeId = associationType.Id;
+        return _associationPropertyTypeFormModal?.ShowAsync() ?? Task.CompletedTask;
+    }
+
+    private Task OpenEditAssociationPropertyTypeForm(AssociationPropertyType propertyType)
+    {
+        _newAssociationPropertyTypeAssociationTypeId = null;
+        return _associationPropertyTypeFormModal?.ShowAsync(propertyType) ?? Task.CompletedTask;
+    }
+
+    private Task OpenEditAssociationPropertyTypeForRowAsync(int associationPropertyTypeId)
+    {
+        var propertyType = _associationPropertyTypes?.FirstOrDefault(p => p.Id == associationPropertyTypeId);
+        return propertyType != null ? OpenEditAssociationPropertyTypeForm(propertyType) : Task.CompletedTask;
+    }
+
+    private Task OpenEditFormForSelectedAssociationPropertyTypeAsync() =>
+        _selectedAssociationPropertyType != null ? OpenEditAssociationPropertyTypeForm(_selectedAssociationPropertyType) : Task.CompletedTask;
+
+    private async Task SaveAssociationPropertyTypeAsync(AssociationPropertyTypeFormInput input)
+    {
+        var userId = await GetUserIdAsync();
+        await AssociationPropertyTypeService.SaveAsync(input, _newAssociationPropertyTypeAssociationTypeId, userId);
+
+        _newAssociationPropertyTypeAssociationTypeId = null;
+
+        if (_selectedAssociationType != null)
+        {
+            await SelectAssociationTypeAsync(_selectedAssociationType);
+        }
+
+        if (input.Id.HasValue)
+        {
+            await SelectAssociationPropertyTypeAsync(input.Id.Value);
+        }
+    }
+
+    private Task DeleteAssociationPropertyTypeForRowAsync(int associationPropertyTypeId)
+    {
+        var propertyType = _associationPropertyTypes?.FirstOrDefault(p => p.Id == associationPropertyTypeId);
+        return propertyType != null ? DeleteAssociationPropertyTypeAsync(propertyType) : Task.CompletedTask;
+    }
+
+    private Task DeleteAssociationPropertyTypeForSelectedAsync() =>
+        _selectedAssociationPropertyType != null ? DeleteAssociationPropertyTypeAsync(_selectedAssociationPropertyType) : Task.CompletedTask;
+
+    private async Task DeleteAssociationPropertyTypeAsync(AssociationPropertyType propertyType)
+    {
+        if (_confirmDialog == null || _selectedAssociationType == null)
+        {
+            return;
+        }
+
+        var confirmed = await _confirmDialog.ShowAsync(
+            title: $"Delete: {propertyType.Name}",
+            message1: $"Are you sure you want to delete the property type '{propertyType.Name}'?",
+            message2: "There is no undo operation for this action.",
+            confirmDialogOptions: new ConfirmDialogOptions { YesButtonText = "Delete", YesButtonColor = ButtonColor.Danger });
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        await AssociationPropertyTypeService.DeleteAsync(propertyType.Id);
+
+        if (_selectedAssociationPropertyType?.Id == propertyType.Id)
+        {
+            _selectedAssociationPropertyType = null;
+        }
+
+        await SelectAssociationTypeAsync(_selectedAssociationType);
     }
 }

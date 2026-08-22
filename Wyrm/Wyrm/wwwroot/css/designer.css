@@ -41,11 +41,27 @@
     color: var(--sapphire-sky);
 }
 
-.designer-tree-objecttype-node .designer-tree-node-label {
+.designer-tree-models-node {
+    padding: 0.3rem 1rem 0.3rem 1.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--bs-secondary-color, #6c757d);
+    cursor: default;
+}
+
+.designer-tree-group-node .designer-tree-node-label {
     padding-left: 1.75rem;
 }
 
+.designer-tree-objecttype-node .designer-tree-node-label,
+.designer-tree-associationtype-node .designer-tree-node-label {
+    padding-left: 2.75rem;
+}
+
 .designer-tree-objecttype-node.active,
+.designer-tree-associationtype-node.active,
 .designer-tree-repo-node.active {
     background-color: var(--pale-sky);
     font-weight: 600;
@@ -57,7 +73,8 @@
     transition: transform 0.15s ease;
 }
 
-.designer-tree-repo-node.designer-tree-expanded .designer-tree-caret {
+.designer-tree-repo-node.designer-tree-expanded .designer-tree-caret,
+.designer-tree-group-node.designer-tree-expanded .designer-tree-caret {
     transform: rotate(90deg);
 }
 
