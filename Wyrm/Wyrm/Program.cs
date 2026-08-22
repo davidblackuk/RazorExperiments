@@ -41,6 +41,8 @@ builder.Services.AddScoped<IPropertyTypeService, PropertyTypeService>();
 builder.Services.AddScoped<IObjectInstanceService, ObjectInstanceService>();
 builder.Services.AddScoped<IAssociationTypeService, AssociationTypeService>();
 builder.Services.AddScoped<IAssociationPropertyTypeService, AssociationPropertyTypeService>();
+builder.Services.AddScoped<IAssociationPropertyValueStore, AssociationPropertyValueStore>();
+builder.Services.AddScoped<IAssociationInstanceService, AssociationInstanceService>();
 
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()

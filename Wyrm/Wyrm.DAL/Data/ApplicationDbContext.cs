@@ -17,6 +17,10 @@ namespace Wyrm.Data
         public DbSet<AssociationType> AssociationTypes { get; set; }
         public DbSet<AssociationPropertyType> AssociationPropertyTypes { get; set; }
         public DbSet<AssociationInstance> AssociationInstances { get; set; }
+        public DbSet<AssociationPropertyValueString> AssociationPropertyValueStrings { get; set; }
+        public DbSet<AssociationPropertyValueInt> AssociationPropertyValueInts { get; set; }
+        public DbSet<AssociationPropertyValueNumber> AssociationPropertyValueNumbers { get; set; }
+        public DbSet<AssociationPropertyValueDateTime> AssociationPropertyValueDateTimes { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -272,17 +276,132 @@ namespace Wyrm.Data
                 .HasForeignKey(i => i.AssociationTypeId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            // Cascade (not Restrict, unlike AssociationType.SourceObjectType/TargetObjectType) - deleting an
+            // ObjectInstance should take its associations with it, the same way deleting an instance already
+            // cascades its PropertyValues, rather than blocking the delete.
             modelBuilder.Entity<AssociationInstance>()
                 .HasOne(i => i.SourceObjectInstance)
                 .WithMany()
                 .HasForeignKey(i => i.SourceObjectInstanceId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<AssociationInstance>()
                 .HasOne(i => i.TargetObjectInstance)
                 .WithMany()
                 .HasForeignKey(i => i.TargetObjectInstanceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationPropertyValueString>()
+                .HasOne(v => v.CreatedBy)
+                .WithMany()
+                .HasForeignKey(v => v.CreatedById)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationPropertyValueString>()
+                .HasOne(v => v.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(v => v.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationPropertyValueString>()
+                .HasOne(v => v.AssociationInstance)
+                .WithMany(i => i.AssociationPropertyValueStrings)
+                .HasForeignKey(v => v.AssociationInstanceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationPropertyValueString>()
+                .HasOne(v => v.AssociationPropertyType)
+                .WithMany()
+                .HasForeignKey(v => v.AssociationPropertyTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationPropertyValueString>()
+                .HasIndex(v => new { v.AssociationInstanceId, v.AssociationPropertyTypeId })
+                .IsUnique();
+
+            modelBuilder.Entity<AssociationPropertyValueInt>()
+                .HasOne(v => v.CreatedBy)
+                .WithMany()
+                .HasForeignKey(v => v.CreatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationPropertyValueInt>()
+                .HasOne(v => v.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(v => v.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationPropertyValueInt>()
+                .HasOne(v => v.AssociationInstance)
+                .WithMany(i => i.AssociationPropertyValueInts)
+                .HasForeignKey(v => v.AssociationInstanceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationPropertyValueInt>()
+                .HasOne(v => v.AssociationPropertyType)
+                .WithMany()
+                .HasForeignKey(v => v.AssociationPropertyTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationPropertyValueInt>()
+                .HasIndex(v => new { v.AssociationInstanceId, v.AssociationPropertyTypeId })
+                .IsUnique();
+
+            modelBuilder.Entity<AssociationPropertyValueNumber>()
+                .HasOne(v => v.CreatedBy)
+                .WithMany()
+                .HasForeignKey(v => v.CreatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationPropertyValueNumber>()
+                .HasOne(v => v.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(v => v.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationPropertyValueNumber>()
+                .HasOne(v => v.AssociationInstance)
+                .WithMany(i => i.AssociationPropertyValueNumbers)
+                .HasForeignKey(v => v.AssociationInstanceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationPropertyValueNumber>()
+                .HasOne(v => v.AssociationPropertyType)
+                .WithMany()
+                .HasForeignKey(v => v.AssociationPropertyTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationPropertyValueNumber>()
+                .HasIndex(v => new { v.AssociationInstanceId, v.AssociationPropertyTypeId })
+                .IsUnique();
+
+            modelBuilder.Entity<AssociationPropertyValueDateTime>()
+                .HasOne(v => v.CreatedBy)
+                .WithMany()
+                .HasForeignKey(v => v.CreatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationPropertyValueDateTime>()
+                .HasOne(v => v.UpdatedBy)
+                .WithMany()
+                .HasForeignKey(v => v.UpdatedById)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<AssociationPropertyValueDateTime>()
+                .HasOne(v => v.AssociationInstance)
+                .WithMany(i => i.AssociationPropertyValueDateTimes)
+                .HasForeignKey(v => v.AssociationInstanceId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationPropertyValueDateTime>()
+                .HasOne(v => v.AssociationPropertyType)
+                .WithMany()
+                .HasForeignKey(v => v.AssociationPropertyTypeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<AssociationPropertyValueDateTime>()
+                .HasIndex(v => new { v.AssociationInstanceId, v.AssociationPropertyTypeId })
+                .IsUnique();
         }
     }
 }

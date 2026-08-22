@@ -3,6 +3,7 @@
 @rendermode InteractiveServer
 @inject IRepositoryService RepositoryService
 @inject IObjectInstanceService ObjectInstanceService
+@inject IAssociationInstanceService AssociationInstanceService
 @inject IJSRuntime JS
 
 <PageTitle>Explorer</PageTitle>
@@ -36,7 +37,10 @@
                 <div class="explorer-bottom">
                     <InstanceDetail Detail="_selectedInstanceDetail" IsLoading="_detailLoading"
                                      OnEditRequested="OpenEditFormForSelectedAsync"
-                                     OnDeleteRequested="OpenDeleteConfirmForSelected" />
+                                     OnDeleteRequested="OpenDeleteConfirmForSelected"
+                                     AssociatedObjects="_associatedObjects" AssociatedObjectsLoading="_associatedObjectsLoading"
+                                     OnAddAssociationRequested="OpenAddAssociationForm"
+                                     OnDeleteAssociationRequested="DeleteAssociationAsync" />
                 </div>
             </div>
         </div>
@@ -44,5 +48,6 @@
 </div>
 
 <InstanceFormModal @ref="_instanceFormModal" OnSave="SaveFormAsync" />
+<AssociationInstanceFormModal @ref="_associationInstanceFormModal" OnSave="SaveAssociationAsync" />
 <RepositoryFormModal @ref="_repositoryFormModal" OnSave="SaveRepositoryAsync" />
 <ConfirmDialog @ref="_confirmDialog" />

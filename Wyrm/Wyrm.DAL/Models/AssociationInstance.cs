@@ -5,9 +5,7 @@ namespace Wyrm.Models
 {
     /// <summary>
     /// Represents an actual link between two object instances, conforming to an
-    /// <see cref="AssociationType"/>'s schema. Not yet populated or exposed by any
-    /// service or UI - the table exists so a future instance-level linking feature
-    /// doesn't require another schema migration for its shape.
+    /// <see cref="AssociationType"/>'s schema.
     /// </summary>
     public class AssociationInstance : IAuditModifications
     {
@@ -75,5 +73,25 @@ namespace Wyrm.Models
         /// Gets or sets the navigation property to the user who last updated this association instance.
         /// </summary>
         public IdentityUser? UpdatedBy { get; set; } = null!;
+
+        /// <summary>
+        /// Gets or sets the string/memo property values recorded against this association instance.
+        /// </summary>
+        public ICollection<AssociationPropertyValueString> AssociationPropertyValueStrings { get; set; } = new List<AssociationPropertyValueString>();
+
+        /// <summary>
+        /// Gets or sets the integer property values recorded against this association instance.
+        /// </summary>
+        public ICollection<AssociationPropertyValueInt> AssociationPropertyValueInts { get; set; } = new List<AssociationPropertyValueInt>();
+
+        /// <summary>
+        /// Gets or sets the numeric (floating point) property values recorded against this association instance.
+        /// </summary>
+        public ICollection<AssociationPropertyValueNumber> AssociationPropertyValueNumbers { get; set; } = new List<AssociationPropertyValueNumber>();
+
+        /// <summary>
+        /// Gets or sets the date/date-time property values recorded against this association instance.
+        /// </summary>
+        public ICollection<AssociationPropertyValueDateTime> AssociationPropertyValueDateTimes { get; set; } = new List<AssociationPropertyValueDateTime>();
     }
 }

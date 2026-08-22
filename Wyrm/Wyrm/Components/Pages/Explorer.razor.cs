@@ -30,6 +30,10 @@ public partial class Explorer : ComponentBase
     private ExplorerInstanceDetailViewModel? _selectedInstanceDetail;
     private bool _detailLoading;
 
+    private List<AssociatedObjectRow>? _associatedObjects;
+    private bool _associatedObjectsLoading;
+    private AssociationInstanceFormModal? _associationInstanceFormModal;
+
     private InstanceFormModal? _instanceFormModal;
     private FormMode _formMode;
     private int? _editingInstanceId;
@@ -78,6 +82,7 @@ public partial class Explorer : ComponentBase
     {
         _selectedInstance = null;
         _selectedInstanceDetail = null;
+        _associatedObjects = null;
         _gridLoading = true;
         StateHasChanged();
 
@@ -97,12 +102,63 @@ public partial class Explorer : ComponentBase
     private async Task SelectInstanceAsync(int instanceId)
     {
         _detailLoading = true;
+        _associatedObjectsLoading = true;
         StateHasChanged();
 
         _selectedInstanceDetail = await ObjectInstanceService.GetDetailAsync(instanceId);
         _selectedInstance = _selectedInstanceDetail.ObjectInstance;
-
         _detailLoading = false;
+
+        _associatedObjects = await AssociationInstanceService.GetAssociatedObjectsAsync(instanceId);
+        _associatedObjectsLoading = false;
+    }
+
+    private async Task OpenAddAssociationForm()
+    {
+        if (_selectedInstance == null || _associationInstanceFormModal == null)
+        {
+            return;
+        }
+
+        var options = await AssociationInstanceService.GetEligibleAssociationsAsync(_selectedInstance.Id);
+        await _associationInstanceFormModal.ShowAsync(_selectedInstance.Id, options);
+    }
+
+    private async Task SaveAssociationAsync(AssociationInstanceFormInput input)
+    {
+        var userId = await GetUserIdAsync();
+        await AssociationInstanceService.CreateAsync(input, userId);
+
+        if (_selectedInstance != null)
+        {
+            await SelectInstanceAsync(_selectedInstance.Id);
+        }
+    }
+
+    private async Task DeleteAssociationAsync(int associationInstanceId)
+    {
+        if (_confirmDialog == null)
+        {
+            return;
+        }
+
+        var confirmed = await _confirmDialog.ShowAsync(
+            title: "Delete Association",
+            message1: "Are you sure you want to remove this association?",
+            message2: "There is no undo operation for this action.",
+            confirmDialogOptions: new ConfirmDialogOptions { YesButtonText = "Delete", YesButtonColor = ButtonColor.Danger });
+
+        if (!confirmed)
+        {
+            return;
+        }
+
+        await AssociationInstanceService.DeleteAsync(associationInstanceId);
+
+        if (_selectedInstance != null)
+        {
+            await SelectInstanceAsync(_selectedInstance.Id);
+        }
     }
 
     private Task OpenCreateForm()
@@ -263,6 +319,7 @@ public partial class Explorer : ComponentBase
             _rows = null;
             _selectedInstance = null;
             _selectedInstanceDetail = null;
+            _associatedObjects = null;
         }
 
         await ReloadRepositoriesAsync();

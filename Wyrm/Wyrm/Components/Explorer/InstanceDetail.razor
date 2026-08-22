@@ -24,26 +24,75 @@
     else
     {
         var objectType = Detail.ObjectInstance.ObjectType!;
-        <dl class="row mb-0 mt-2">
-            @foreach (var propertyType in objectType.PropertyTypes)
-            {
-                var value = Detail.Values.GetValueOrDefault(propertyType.Id);
-                <dt class="col-sm-3">@propertyType.Name</dt>
-                <dd class="col-sm-9">
-                    @if (string.IsNullOrEmpty(value))
+        <Tabs>
+            <Tab Title="Properties">
+                <Content>
+                    <dl class="row mb-0 mt-2">
+                        @foreach (var propertyType in objectType.PropertyTypes)
+                        {
+                            var value = Detail.Values.GetValueOrDefault(propertyType.Id);
+                            <dt class="col-sm-3">@propertyType.Name</dt>
+                            <dd class="col-sm-9">
+                                @if (string.IsNullOrEmpty(value))
+                                {
+                                    <span class="text-muted">(not set)</span>
+                                }
+                                else if (propertyType.DataType == PropertyDataType.Memo)
+                                {
+                                    <span style="white-space: pre-wrap;">@value</span>
+                                }
+                                else
+                                {
+                                    @value
+                                }
+                            </dd>
+                        }
+                    </dl>
+                </Content>
+            </Tab>
+            <Tab Title="Associated Objects">
+                <Content>
+                    <div class="d-flex justify-content-end mb-2 mt-2">
+                        <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" @onclick="() => OnAddAssociationRequested.InvokeAsync()">
+                            <i class="fa-solid fa-plus me-1"></i>Add Association
+                        </Button>
+                    </div>
+                    @if (AssociatedObjectsLoading)
                     {
-                        <span class="text-muted">(not set)</span>
+                        <p class="text-muted mb-0">Loading&hellip;</p>
                     }
-                    else if (propertyType.DataType == PropertyDataType.Memo)
+                    else if (AssociatedObjects == null || !AssociatedObjects.Any())
                     {
-                        <span style="white-space: pre-wrap;">@value</span>
+                        <p class="text-muted mb-0">No associated objects.</p>
                     }
                     else
                     {
-                        @value
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Association</th>
+                                    <th>Object</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var row in AssociatedObjects)
+                                {
+                                    <tr>
+                                        <td><i class="fa-solid fa-link me-1"></i>@row.DirectionLabel</td>
+                                        <td>@row.OtherObjectTypeName: @row.OtherDisplayName</td>
+                                        <td class="text-end">
+                                            <button type="button" class="btn btn-light btn-sm" title="Delete" @onclick="() => OnDeleteAssociationRequested.InvokeAsync(row.AssociationInstanceId)">
+                                                <i class="fa-solid fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
                     }
-                </dd>
-            }
-        </dl>
+                </Content>
+            </Tab>
+        </Tabs>
     }
 </div>
