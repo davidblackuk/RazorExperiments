@@ -24,7 +24,7 @@
     else
     {
         var objectType = Detail.ObjectInstance.ObjectType!;
-        <Tabs>
+        <Tabs @key="Detail.ObjectInstance.Id">
             <Tab Title="Properties">
                 <Content>
                     <dl class="row mb-0 mt-2">
