@@ -14,7 +14,6 @@ public partial class Designer : ComponentBase
 {
     private List<Repository> _repositories = new();
     private int? _selectedRepositoryId;
-    private string? _repositoryError;
     private int? _newObjectTypeRepositoryId;
 
     private ObjectType? _selectedObjectType;
@@ -25,7 +24,6 @@ public partial class Designer : ComponentBase
     private PropertyType? _selectedPropertyType;
     private bool _detailLoading;
 
-    private string? _objectTypeError;
     private int? _newAssociationTypeRepositoryId;
 
     private AssociationType? _selectedAssociationType;
@@ -127,7 +125,7 @@ public partial class Designer : ComponentBase
         var result = await RepositoryService.DeleteAsync(repository.Id);
         if (!result.Success)
         {
-            _repositoryError = result.ErrorMessage;
+            ToastService.Notify(new ToastMessage(ToastType.Danger, result.ErrorMessage!));
             return;
         }
 
@@ -225,11 +223,9 @@ public partial class Designer : ComponentBase
         var result = await ObjectTypeService.DeleteAsync(objectType.Id);
         if (!result.Success)
         {
-            _objectTypeError = result.ErrorMessage;
+            ToastService.Notify(new ToastMessage(ToastType.Danger, result.ErrorMessage!));
             return;
         }
-
-        _objectTypeError = null;
 
         if (_selectedObjectType?.Id == objectType.Id)
         {

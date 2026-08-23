@@ -18,9 +18,6 @@ public partial class Explorer : ComponentBase
     private List<Repository> _repositories = new();
 
     private int? _selectedRepositoryId;
-    private string? _repositoryError;
-    private string? _backupError;
-    private string? _backupSuccessMessage;
     private RepositoryFormModal? _repositoryFormModal;
     private ConfirmDialog? _confirmDialog;
 
@@ -306,7 +303,7 @@ public partial class Explorer : ComponentBase
         var result = await RepositoryService.DeleteAsync(repository.Id);
         if (!result.Success)
         {
-            _repositoryError = result.ErrorMessage;
+            ToastService.Notify(new ToastMessage(ToastType.Danger, result.ErrorMessage!));
             return;
         }
 
@@ -329,17 +326,14 @@ public partial class Explorer : ComponentBase
 
     private async Task BackupDatabaseAsync()
     {
-        _backupError = null;
-        _backupSuccessMessage = null;
-
         var result = await DatabaseBackupService.BackupAsync();
         if (!result.Success)
         {
-            _backupError = result.ErrorMessage;
+            ToastService.Notify(new ToastMessage(ToastType.Danger, result.ErrorMessage!));
             return;
         }
 
-        _backupSuccessMessage = $"Database backed up to {result.FileName}.";
+        ToastService.Notify(new ToastMessage(ToastType.Success, $"Database backed up to {result.FileName}."));
     }
 
     private async Task ReloadRepositoriesAsync()

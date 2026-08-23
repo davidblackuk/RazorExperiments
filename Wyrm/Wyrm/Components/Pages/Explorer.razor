@@ -5,6 +5,7 @@
 @inject IObjectInstanceService ObjectInstanceService
 @inject IAssociationInstanceService AssociationInstanceService
 @inject IDatabaseBackupService DatabaseBackupService
+@inject ToastService ToastService
 @inject IJSRuntime JS
 
 <PageTitle>Explorer</PageTitle>
@@ -14,27 +15,6 @@
         <div class="explorer-shell">
             <div class="explorer-sidebar">
                 <RepositoryToolbar CanDelete="_selectedRepositoryId.HasValue" OnAddRequested="OpenCreateRepositoryForm" OnDeleteRequested="OpenDeleteRepositoryConfirm" OnBackupRequested="BackupDatabaseAsync" />
-                @if (_repositoryError != null)
-                {
-                    <Alert Color="AlertColor.Danger" Class="m-2 py-1 px-2 d-flex justify-content-between align-items-start">
-                        <span>@_repositoryError</span>
-                        <button type="button" class="btn-close" @onclick="() => _repositoryError = null"></button>
-                    </Alert>
-                }
-                @if (_backupError != null)
-                {
-                    <Alert Color="AlertColor.Danger" Class="m-2 py-1 px-2 d-flex justify-content-between align-items-start">
-                        <span>@_backupError</span>
-                        <button type="button" class="btn-close" @onclick="() => _backupError = null"></button>
-                    </Alert>
-                }
-                @if (_backupSuccessMessage != null)
-                {
-                    <Alert Color="AlertColor.Success" Class="m-2 py-1 px-2 d-flex justify-content-between align-items-start">
-                        <span>@_backupSuccessMessage</span>
-                        <button type="button" class="btn-close" @onclick="() => _backupSuccessMessage = null"></button>
-                    </Alert>
-                }
                 <RepositoryTree Repositories="_repositories" SelectedObjectTypeId="_selectedObjectType?.Id" OnObjectTypeSelected="SelectObjectTypeAsync"
                                 SelectedRepositoryId="_selectedRepositoryId" OnRepositorySelected="SelectRepository" />
             </div>
@@ -66,3 +46,4 @@
 <AssociationInstanceFormModal @ref="_associationInstanceFormModal" OnSave="SaveAssociationAsync" />
 <RepositoryFormModal @ref="_repositoryFormModal" OnSave="SaveRepositoryAsync" />
 <ConfirmDialog @ref="_confirmDialog" />
+<Toasts Placement="ToastsPlacement.TopRight" />
