@@ -1,9 +1,6 @@
 <div class="explorer-pane-header d-flex justify-content-between align-items-center">
     <span><i class="fa-solid fa-compass me-1"></i> Repositories</span>
     <div class="position-relative" @onclick:stopPropagation="true">
-        <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Add Repository" @onclick="() => OnAddRequested.InvokeAsync()">
-            <i class="fa-solid fa-plus"></i>
-        </Button>
         <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="ToggleMenu">
             <i class="fa-solid fa-ellipsis-vertical"></i>
         </button>
@@ -11,6 +8,11 @@
         {
             <div class="dropdown-menu-overlay" @onclick="CloseMenu"></div>
             <ul class="dropdown-menu dropdown-menu-end show">
+                <li>
+                    <button type="button" class="dropdown-item" @onclick="() => { CloseMenu(); OnAddRequested.InvokeAsync(); }">
+                        <i class="fa-solid fa-plus me-2"></i>Add Repository
+                    </button>
+                </li>
                 <li>
                     <button type="button" class="dropdown-item" @onclick="() => { CloseMenu(); OnBackupRequested.InvokeAsync(); }">
                         <i class="fa-solid fa-download me-2"></i>Backup Database
