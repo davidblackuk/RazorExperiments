@@ -1,11 +1,27 @@
 <div class="explorer-pane-header d-flex justify-content-between align-items-center">
     <span><i class="fa-solid fa-compass me-1"></i> Repositories</span>
-    <div>
+    <div class="position-relative" @onclick:stopPropagation="true">
         <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Add Repository" @onclick="() => OnAddRequested.InvokeAsync()">
             <i class="fa-solid fa-plus"></i>
         </Button>
-        <Button Color="ButtonColor.Light" Size="ButtonSize.Small" TooltipTitle="Delete Repository" Disabled="@(!CanDelete)" @onclick="() => OnDeleteRequested.InvokeAsync()">
-            <i class="fa-solid fa-trash"></i>
-        </Button>
+        <button type="button" class="btn btn-light btn-sm" title="Actions" @onclick="ToggleMenu">
+            <i class="fa-solid fa-ellipsis-vertical"></i>
+        </button>
+        @if (_menuOpen)
+        {
+            <div class="dropdown-menu-overlay" @onclick="CloseMenu"></div>
+            <ul class="dropdown-menu dropdown-menu-end show">
+                <li>
+                    <button type="button" class="dropdown-item" @onclick="() => { CloseMenu(); OnBackupRequested.InvokeAsync(); }">
+                        <i class="fa-solid fa-download me-2"></i>Backup Database
+                    </button>
+                </li>
+                <li>
+                    <button type="button" class="dropdown-item" disabled="@(!CanDelete)" @onclick="() => { CloseMenu(); OnDeleteRequested.InvokeAsync(); }">
+                        <i class="fa-solid fa-trash me-2"></i>Delete Repository
+                    </button>
+                </li>
+            </ul>
+        }
     </div>
 </div>

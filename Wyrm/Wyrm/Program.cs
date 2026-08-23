@@ -44,6 +44,9 @@ builder.Services.AddScoped<IAssociationPropertyTypeService, AssociationPropertyT
 builder.Services.AddScoped<IAssociationPropertyValueStore, AssociationPropertyValueStore>();
 builder.Services.AddScoped<IAssociationInstanceService, AssociationInstanceService>();
 
+var dbFilePath = new Microsoft.Data.Sqlite.SqliteConnectionStringBuilder(connectionString).DataSource;
+builder.Services.AddScoped<IDatabaseBackupService>(_ => new DatabaseBackupService(dbFilePath));
+
 builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
